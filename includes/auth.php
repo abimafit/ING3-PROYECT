@@ -46,9 +46,9 @@ function tieneRol($rolesPermitidos) {
 function redirigirSegunRol() {
     if (!estaLogueado()) return 'login.php';
     switch ($_SESSION['rol']) {
-        case 'turista': return 'dashboard.php?view=buscar';
-        case 'compania': return 'dashboard.php?view=gestion_flota';
-        case 'administrador': return 'dashboard.php?view=reportes';
+        case 'turista': return 'dashboard.php?view=panel';
+        case 'compania': return 'dashboard.php?view=panel';
+        case 'administrador': return 'dashboard.php?view=dashboard';
         case 'soporte': return 'dashboard.php?view=tickets';
         default: return 'login.php';
     }

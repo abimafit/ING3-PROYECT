@@ -1,5 +1,19 @@
 <?php require_once 'includes/auth.php';
-if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
+if (estaLogueado()) header('Location: ' . redirigirSegunRol());
+$toasts = [];
+if (isset($_GET['error'])) {
+    $toasts[] = ['t' => 'error', 'm' => 'Credenciales inválidas. Verifica tu email y contraseña.'];
+}
+if (isset($_GET['recuperado']) && $_GET['recuperado'] == 'ok') {
+    $toasts[] = ['t' => 'success', 'm' => 'Contraseña actualizada correctamente. Ahora puedes iniciar sesión.'];
+}
+if (isset($_GET['codigo'])) {
+    $toasts[] = ['t' => 'warning', 'm' => 'Código de verificación para tu empresa: ' . $_GET['codigo'] . '. Guárdalo, lo necesitarás para activar tu cuenta.'];
+}
+if (isset($_GET['registro']) && $_GET['registro'] == 'ok') {
+    $toasts[] = ['t' => 'success', 'm' => 'Registro exitoso. Ahora puedes iniciar sesión.'];
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -7,122 +21,11 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión - RentWheels</title>
+    <link rel="icon" type="image/png" href="img/rw-logo.png">
     <link rel="stylesheet" href="css/style-global.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos específicos para login */
-        .auth-page {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: #f8fafc;
-        }
-        .auth-main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-        .auth-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 28px;
-            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
-            max-width: 420px;
-            width: 100%;
-        }
-        .auth-card h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-            text-align: center;
-        }
-        .auth-card .subtitle {
-            text-align: center;
-            color: #6b7280;
-            margin-bottom: 1.5rem;
-        }
-        .auth-card .form-group {
-            margin-bottom: 1.2rem;
-        }
-        .auth-card label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.3rem;
-            color: #374151;
-        }
-        .auth-card input {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-        .auth-card input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
-            outline: none;
-        }
-        .auth-card .btn-submit {
-            width: 100%;
-            padding: 0.8rem;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 0.5rem;
-        }
-        .auth-card .btn-submit:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
-        }
-        .auth-card .links {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.95rem;
-            color: #6b7280;
-        }
-        .auth-card .links a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .auth-card .links a:hover {
-            text-decoration: underline;
-        }
-        .error-msg {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #ef4444;
-        }
-        .success-msg {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #10b981;
-        }
-        .warning-msg {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #f59e0b;
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body class="auth-page">
@@ -130,7 +33,7 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
     <header class="main-header">
         <div class="header-container">
             <a href="index.php" class="logo">
-                <span class="logo-icon">🚗</span>
+                <span class="logo-icon"><img src="img/rw-logo.png" alt="RentWheels"></span>
                 <span class="logo-text">RentWheels</span>
             </a>
             <nav class="main-nav">
@@ -147,30 +50,6 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
         <div class="auth-card">
             <h2>Bienvenido de nuevo</h2>
             <p class="subtitle">Ingresa tus credenciales para continuar</p>
-
-            <!--  Mensaje de error de login -->
-            <?php if (isset($_GET['error'])): ?>
-                <div class="error-msg"> Credenciales inválidas. Verifica tu email y contraseña.</div>
-            <?php endif; ?>
-
-            <!--  Mensaje de éxito al recuperar contraseña -->
-            <?php if (isset($_GET['recuperado']) && $_GET['recuperado'] == 'ok'): ?>
-                <div class="success-msg"> Contraseña actualizada correctamente. Ahora puedes iniciar sesión.</div>
-            <?php endif; ?>
-
-            <!--  Mensaje de código de verificación (para empresas) -->
-            <?php if (isset($_GET['codigo'])): ?>
-                <div class="warning-msg">
-                     <strong>Código de verificación para tu empresa:</strong>
-                    <span style="font-size:1.4rem; font-weight:700; color:#2563eb; letter-spacing:2px;"><?php echo htmlspecialchars($_GET['codigo']); ?></span>
-                    <br>Guárdalo, lo necesitarás para activar tu cuenta.
-                </div>
-            <?php endif; ?>
-
-            <!--  Mensaje de registro exitoso -->
-            <?php if (isset($_GET['registro']) && $_GET['registro'] == 'ok'): ?>
-                <div class="success-msg"> Registro exitoso. Ahora puedes iniciar sesión.</div>
-            <?php endif; ?>
 
             <form id="loginForm" method="POST" action="procesar_login.php">
                 <div class="form-group">
@@ -212,9 +91,9 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
             <div class="footer-column">
                 <h4>Síguenos</h4>
                 <div class="social-links">
-                    <a href="#" title="Facebook">📘</a>
-                    <a href="#" title="Instagram">📸</a>
-                    <a href="#" title="Twitter">🐦</a>
+                    <a href="#" title="Facebook"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.33-.05-1.4-.14-2.55-.14C11.74 2 9.97 3.66 9.97 6.7v2.8H7v4h2.97V22h4.02v-8.5Z"/></svg></a>
+                    <a href="#" title="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
+                    <a href="#" title="X (Twitter)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
                 </div>
             </div>
         </div>
@@ -224,6 +103,13 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
     </footer>
 
     <script src="js/validaciones.js"></script>
+    <script src="js/modals.js"></script>
+    <script>
+        (function() {
+            var toasts = <?php echo json_encode($toasts, JSON_UNESCAPED_UNICODE); ?>;
+            toasts.forEach(function(t) { showAlert(t.m, t.t); });
+        })();
+    </script>
 </body>
 
 </html>

@@ -89,7 +89,7 @@ if ($method === 'POST' && !isset($_POST['pagar'])) {
     $stmt->execute([$_SESSION['user_id']]);
     $saldo = $stmt->fetchColumn();
     if ($saldo > 0) {
-        echo json_encode(['error' => "❌ Tienes un saldo pendiente de $${saldo}. Debes pagarlo antes de hacer una nueva reserva."]);
+        echo json_encode(['error' => "Tienes un saldo pendiente de $${saldo}. Debes pagarlo antes de hacer una nueva reserva."]);
         exit;
     }
 
@@ -225,7 +225,7 @@ if ($method === 'PUT') {
         exit;
     }
 
-    // 🔹 Turista: solo puede cancelar si la reserva está pendiente
+    // Turista: solo puede cancelar si la reserva está pendiente
     if ($_SESSION['rol'] === 'turista') {
         if ($nuevo_estado !== 'cancelada') {
             echo json_encode(['error' => 'Los turistas solo pueden cancelar reservas']);
@@ -253,7 +253,7 @@ if ($method === 'PUT') {
         }
     }
 
-    // 🔹 Compañía o Administrador: pueden confirmar o cancelar
+    // Compañía o Administrador: pueden confirmar o cancelar
     if (($_SESSION['rol'] === 'compania' || $_SESSION['rol'] === 'administrador')) {
         try {
             if ($_SESSION['rol'] === 'compania') {

@@ -5,8 +5,8 @@
 
 <script>
 function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
@@ -88,29 +88,27 @@ function cargarReservas() {
 }
 
 function procesarReserva(reserva_id, estado) {
-    if (!confirm(`¿Estás seguro de ${estado === 'confirmada' ? 'confirmar' : 'cancelar'} esta reserva?`)) return;
+    showConfirm(`¿Estás seguro de ${estado === 'confirmada' ? 'confirmar' : 'cancelar'} esta reserva?`, function() {
 
-    $.ajax({
-        url: 'api/reservas.php',
-        method: 'PUT',
-        data: { actualizar_estado: 1, reserva_id, estado },
-        success: function(res) {
-            showAlert(res.mensaje, 'success');
+        $.ajax({
+            url: 'api/reservas.php',
+            method: 'PUT',
+            data: { actualizar_estado: 1, reserva_id, estado },
+            success: function(res) {
+                showAlert(res.mensaje, 'success');
 
-            // Ocultar la fila de la reserva sin recargar toda la página
-            $('#reserva-' + reserva_id).fadeOut(300, function() {
-                $(this).remove();
-                // Si no quedan reservas pendientes, mostrar mensaje
-                if ($('#reservasList tbody tr').length === 0) {
-                    $('#reservasList').html('<p style="color:#6b7280;text-align:center;padding:1rem;">✅ Todas las reservas han sido procesadas.</p>');
-                }
-            });
-        },
-        error: function(xhr) {
-            const resp = xhr.responseJSON;
-            showAlert('Error al procesar la reserva', 'error');
-
-        }
+                $('#reserva-' + reserva_id).fadeOut(300, function() {
+                    $(this).remove();
+                    if ($('#reservasList tbody tr').length === 0) {
+                        $('#reservasList').html('<p style="color:#6b7280;text-align:center;padding:1rem;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--rw-success)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M20 6 9 17l-5-5"/></svg>Todas las reservas han sido procesadas.</p>');
+                    }
+                });
+            },
+            error: function(xhr) {
+                const resp = xhr.responseJSON;
+                showAlert(resp && resp.error ? resp.error : 'Error al procesar la reserva', 'error');
+            }
+        });
     });
 }
 

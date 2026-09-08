@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('America/Panama');
-session_start(); // ⬅ Obligatorio para que funcione la sesión
+session_start(); // Obligatorio para que funcione la sesión
 $host = 'localhost';
 $dbname = 'rentwheels_db';
 $username = 'root';

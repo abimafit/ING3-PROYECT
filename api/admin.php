@@ -50,6 +50,53 @@ if ($method === 'GET') {
             $stats['total_reservas'] = $stmt->fetchColumn();
             $stmt = $pdo->query("SELECT COALESCE(SUM(monto_total), 0) FROM reservas WHERE estado='confirmada'"); 
             $stats['ingresos_totales'] = $stmt->fetchColumn();
+
+            $stmt = $pdo->query("SELECT COUNT(*) FROM vehiculos WHERE disponible = 1");
+            $stats['vehiculos_disponibles'] = $stmt->fetchColumn();
+            $stats['vehiculos_ocupados'] = max((int)$stats['total_vehiculos'] - (int)$stats['vehiculos_disponibles'], 0);
+
+            $stmt = $pdo->query("SELECT estado, COUNT(*) AS c FROM reservas GROUP BY estado");
+            $por_estado = [];
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $por_estado[$row['estado']] = (int)$row['c'];
+            }
+            $stats['reservas_por_estado'] = $por_estado;
+
+            $stmt = $pdo->query("SELECT rol, COUNT(*) AS c FROM usuarios GROUP BY rol");
+            $por_rol = [];
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $por_rol[$row['rol']] = (int)$row['c'];
+            }
+            $stats['usuarios_por_rol'] = $por_rol;
+
+            $stmt = $pdo->query("SELECT DATE_FORMAT(fecha_reserva, '%Y-%m') AS mes, COUNT(*) AS c 
+                                 FROM reservas 
+                                 WHERE fecha_reserva >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) 
+                                 GROUP BY mes ORDER BY mes");
+            $stats['reservas_por_mes'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $stmt = $pdo->query("SELECT DATE_FORMAT(fecha_reserva, '%Y-%m') AS mes, COUNT(*) AS c, COALESCE(SUM(monto_total), 0) AS ingresos 
+                                 FROM reservas 
+                                 WHERE estado = 'confirmada' AND fecha_reserva >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) 
+                                 GROUP BY mes ORDER BY mes");
+            $stats['ingresos_por_mes'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $stmt = $pdo->query("SELECT CONCAT(v.marca, ' ', v.modelo) AS vehiculo, COUNT(r.id) AS reservas, COALESCE(SUM(r.monto_total), 0) AS ingresos 
+                                 FROM reservas r 
+                                 JOIN vehiculos v ON r.vehiculo_id = v.id 
+                                 GROUP BY r.vehiculo_id 
+                                 ORDER BY reservas DESC, ingresos DESC 
+                                 LIMIT 5");
+            $stats['top_vehiculos'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $stmt = $pdo->query("SELECT u_c.nombre AS compania, COUNT(r.id) AS reservas, COALESCE(SUM(r.monto_total), 0) AS ingresos 
+                                 FROM reservas r 
+                                 JOIN vehiculos v ON r.vehiculo_id = v.id 
+                                 JOIN usuarios u_c ON v.compania_id = u_c.id 
+                                 GROUP BY u_c.id 
+                                 ORDER BY reservas DESC, ingresos DESC");
+            $stats['reservas_por_compania'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             echo json_encode($stats);
             exit;
         }

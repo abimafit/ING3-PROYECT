@@ -41,14 +41,14 @@ if ($verificado) {
     font-weight: 600;
 }
 .verificar-card input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+    border-color: var(--rw-red);
+    box-shadow: 0 0 0 3px rgba(198,26,48,0.15);
     outline: none;
 }
 .verificar-card .btn-verificar {
     width: 100%;
     padding: 0.8rem;
-    background: #2563eb;
+    background: var(--rw-red);
     color: white;
     border: none;
     border-radius: 40px;
@@ -59,7 +59,7 @@ if ($verificado) {
     margin-top: 1rem;
 }
 .verificar-card .btn-verificar:hover {
-    background: #1d4ed8;
+    background: var(--rw-red-dark);
     transform: translateY(-2px);
 }
 .verificar-card .error-msg {
@@ -99,7 +99,7 @@ if ($verificado) {
         </form>
         
         <div style="margin-top: 1.5rem; font-size: 0.85rem; color: #6b7280;">
-            ¿No recibiste el código? <a href="#" onclick="reenviarCodigo()" style="color: #2563eb; text-decoration: none;">Reenviar</a>
+            ¿No recibiste el código? <a href="#" onclick="reenviarCodigo()" style="color: var(--rw-red); text-decoration: none;">Reenviar</a>
         </div>
     </div>
 </div>
@@ -115,13 +115,16 @@ $('#verificarForm').submit(function(e) {
     }
     
     $('#mensaje').html('<p style="color:#6b7280;">Verificando código...</p>');
-    
+
+    var iconoOk = '<svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:-2px;margin-right:5px;" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ';
+    var iconoErr = '<svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:-2px;margin-right:5px;" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg> ';
+
     $.post('api/verificar.php', { codigo: codigo })
         .done(function(res) {
             if (res.error) {
-                $('#mensaje').html('<div class="error-msg">❌ ' + res.error + '</div>');
+                $('#mensaje').html('<div class="error-msg">' + iconoErr + res.error + '</div>');
             } else {
-                $('#mensaje').html('<div class="success-msg">✅ ' + res.mensaje + '</div>');
+                $('#mensaje').html('<div class="success-msg">' + iconoOk + res.mensaje + '</div>');
                 setTimeout(function() {
                     window.location.href = '?view=gestion_flota';
                 }, 1500);
@@ -133,19 +136,20 @@ $('#verificarForm').submit(function(e) {
                 const resp = JSON.parse(jqXHR.responseText);
                 if (resp.error) msg = resp.error;
             } catch(e) {}
-            $('#mensaje').html('<div class="error-msg">❌ ' + msg + '</div>');
+            $('#mensaje').html('<div class="error-msg">' + iconoErr + msg + '</div>');
         });
 });
 
 function reenviarCodigo() {
-    if (!confirm('¿Reenviar código de verificación al correo?')) return;
-    $.post('api/verificar.php', { reenviar: 1 })
-        .done(function(res) {
-            if (res.error) alert('❌ ' + res.error);
-            else alert('✅ ' + res.mensaje);
-        })
-        .fail(function() {
-            alert('Error al reenviar el código.');
-        });
+    showConfirm('¿Reenviar código de verificación al correo?', function() {
+        $.post('api/verificar.php', { reenviar: 1 })
+            .done(function(res) {
+                if (res.error) showAlert(res.error, 'error');
+                else showAlert(res.mensaje, 'success');
+            })
+            .fail(function() {
+                showAlert('Error al reenviar el código.', 'error');
+            });
+    });
 }
 </script>

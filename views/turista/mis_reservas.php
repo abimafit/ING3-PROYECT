@@ -1,21 +1,20 @@
-<h3>Mis reservas</h3>
+<div class="view-header">
+    <h3>Mis reservas</h3>
+</div>
 
-<!-- Pestañas -->
-<div style="display: flex; gap: 1rem; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem;">
-    <button id="tabActivas" class="tab-btn active" onclick="cargarReservas(false)" style="background: none; border: none; padding: 0.5rem 1rem; font-weight: 600; color: #2563eb; border-bottom: 3px solid #2563eb; cursor: pointer; transition: all 0.2s;">📅 Reservas activas</button>
-    <button id="tabHistorial" class="tab-btn" onclick="cargarReservas(true)" style="background: none; border: none; padding: 0.5rem 1rem; font-weight: 600; color: #6b7280; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s;">📜 Historial</button>
+<div class="tabs-container" style="display:flex; gap:0.25rem; border-bottom:2px solid #e5e7eb; margin-bottom:1.5rem;">
+    <button id="tabActivas" class="tab-btn active" onclick="cargarReservas(false)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>Reservas activas</button>
+    <button id="tabHistorial" class="tab-btn" onclick="cargarReservas(true)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>Historial</button>
 </div>
 
 <div id="reservasContainer">
-    <div id="reservas">
-        <p style="color:#6b7280;">Cargando reservas...</p>
-    </div>
+    <div id="reservas"></div>
 </div>
 
 <script>
 function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
@@ -26,37 +25,30 @@ function escapeHtml(str) {
 function cambiarPestana(historial) {
     const tabActivas = document.getElementById('tabActivas');
     const tabHistorial = document.getElementById('tabHistorial');
-    if (historial) {
-        tabActivas.className = 'tab-btn';
-        tabActivas.style.color = '#6b7280';
-        tabActivas.style.borderBottom = '3px solid transparent';
-        tabHistorial.className = 'tab-btn active';
-        tabHistorial.style.color = '#2563eb';
-        tabHistorial.style.borderBottom = '3px solid #2563eb';
-    } else {
-        tabActivas.className = 'tab-btn active';
-        tabActivas.style.color = '#2563eb';
-        tabActivas.style.borderBottom = '3px solid #2563eb';
-        tabHistorial.className = 'tab-btn';
-        tabHistorial.style.color = '#6b7280';
-        tabHistorial.style.borderBottom = '3px solid transparent';
-    }
+    tabActivas.classList.toggle('active', !historial);
+    tabHistorial.classList.toggle('active', historial);
 }
 
 function cargarReservas(historial) {
     cambiarPestana(historial);
     const url = 'api/reservas.php?mis_reservas=1' + (historial ? '&historial=1' : '');
-    $('#reservas').html('<p style="color:#6b7280;">Cargando reservas...</p>');
+    $('#reservas').html('<div class="loading">Cargando reservas...</div>');
     $.get(url, function(data) {
         if (data.error) {
             $('#reservas').html('<div class="error">' + escapeHtml(data.error) + '</div>');
             return;
         }
         if (data.length === 0) {
-            $('#reservas').html('<p style="color:#6b7280;">' + (historial ? 'No hay reservas en el historial.' : 'No tienes reservas activas.') + '</p>');
+            $('#reservas').html(
+                '<div class="empty-state">' +
+                    '<span class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3l2.5-3h7l2.5 3h3a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"/><path d="M3 13h18"/></svg></span>' +
+                    '<h4>' + (historial ? 'No hay reservas en el historial' : 'No tienes reservas activas') + '</h4>' +
+                    (historial ? '' : '<p>Busca un vehículo y haz tu primera reserva.</p>') +
+                '</div>'
+            );
             return;
         }
-        let html = '<table class="table">';
+        let html = '<div class="table-responsive"><table class="table">';
         html += '<thead><tr><th>Vehículo</th><th>Fechas</th><th>Monto</th><th>Estado</th>';
         if (!historial) html += '<th>Acción</th>';
         html += '</tr></thead><tbody>';
@@ -66,110 +58,94 @@ function cargarReservas(historial) {
             const fechaInicio = escapeHtml(r.fecha_inicio);
             const fechaFin = escapeHtml(r.fecha_fin);
             const estado = escapeHtml(r.estado);
-            
-            // Verificar si la reserva está pagada (campo `pagado` en BD)
+
             const pagado = parseInt(r.pagado) === 1;
-            
-            // Mostrar monto con recargo si aplica
+
             let montoHtml = '$' + r.monto_total;
             if (r.recargo_aplicado > 0) {
-                montoHtml += '<br><span style="color:#dc2626; font-size:0.8rem;">+25% recargo ($' + r.recargo_aplicado + ')<br><strong>Total: $' + r.monto_total_con_recargo + '</strong></span><br><span style="color:#dc2626; font-size:0.7rem;">⚠️ Reserva vencida</span>';
+                montoHtml += '<br><span style="color:var(--rw-danger); font-size:0.8rem;">+25% recargo ($' + r.recargo_aplicado + ')<br><strong>Total: $' + r.monto_total_con_recargo + '</strong></span>';
             }
-            
+
+            let badge = '<span class="badge">' + estado + '</span>';
+            if (estado === 'pendiente') badge = '<span class="badge badge-warning">Pendiente de confirmación</span>';
+            else if (estado === 'confirmada' && pagado) badge = '<span class="badge badge-success">Pagado</span>';
+            else if (estado === 'confirmada') badge = '<span class="badge badge-warning">Pendiente de pago</span>';
+            else if (estado === 'cancelada') badge = '<span class="badge badge-danger">Cancelada</span>';
+
             html += `<tr>
-                         <td>${marca} ${modelo}</td>
+                         <td><strong>${marca} ${modelo}</strong></td>
                          <td>${fechaInicio} a ${fechaFin}</td>
                          <td>${montoHtml}</td>
-                         <td>${estado}</td>`;
-                         
+                         <td>${badge}</td>`;
+
             if (!historial) {
                 html += '<td>';
                 if (estado === 'pendiente') {
-                    html += `<button onclick="pagar(${r.id})" class="btn-small" style="background:#2563eb;">Pagar</button> `;
-                    html += `<button onclick="cancelarReserva(${r.id})" class="btn-small" style="background:#f59e0b;">Cancelar</button>`;
+                    html += `<button onclick="pagar(${r.id})" class="btn-small btn-warning">Pagar</button> `;
+                    html += `<button onclick="cancelarReserva(${r.id})" class="btn-small btn-warning" style="background:var(--rw-red);border-color:var(--rw-red);">Cancelar</button>`;
                 } else if (estado === 'confirmada') {
                     if (pagado) {
-                        html += `<span class="badge" style="background:#10b981;color:white;">Pagado</span> `;
-                        html += `<button onclick="verRecibo(${r.id})" class="btn-small" style="background:#2563eb;">Ver recibo</button>`;
+                        html += `<button onclick="verRecibo(${r.id})" class="btn-small btn-primary">Ver recibo</button>`;
                     } else {
-                        html += `<span class="badge" style="background:#f59e0b;color:white;">Pendiente de pago</span> `;
-                        html += `<button onclick="pagar(${r.id})" class="btn-small" style="background:#2563eb;">Pagar</button>`;
+                        html += `<button onclick="pagar(${r.id})" class="btn-small btn-warning">Pagar</button>`;
                     }
                 } else if (estado === 'cancelada') {
-                    html += `<span class="badge" style="background:#ef4444;color:white;">Cancelada</span> `;
-                    html += `<button onclick="eliminarReserva(${r.id})" class="btn-small" style="background:#6b7280;">Eliminar</button>`;
+                    html += `<button onclick="eliminarReserva(${r.id})" class="btn-small" style="background:var(--rw-gray-500);border-color:var(--rw-gray-500);">Eliminar</button>`;
                 }
                 html += '</td>';
             }
             html += `</tr>`;
         });
-        html += '</tbody></table>';
+        html += '</tbody></table></div>';
         $('#reservas').html(html);
     }).fail(function() {
         $('#reservas').html('<div class="error">Error al cargar reservas</div>');
     });
 }
 
-// Ir a la página de pago
 function pagar(reserva_id) {
     window.location.href = '?view=pago&reserva_id=' + reserva_id;
 }
 
-// Cancelar reserva (solo pendiente)
 function cancelarReserva(reserva_id) {
-showConfirm('¿Cancelar esta reserva?', function() {
-    // Llamada AJAX para cancelar
-
-    $.ajax({
-        url: 'api/reservas.php',
-        method: 'PUT',
-        data: { actualizar_estado: 1, reserva_id, estado: 'cancelada' },
-        success: function(res) {
-            alert(res.mensaje);
-            cargarReservas(false);
-        },
-        error: function(xhr) {
-            const resp = xhr.responseJSON;
-            alert(resp ? resp.error : 'Error al cancelar');
-        }
-    });
+    showConfirm('¿Cancelar esta reserva?', function() {
+        $.ajax({
+            url: 'api/reservas.php',
+            method: 'PUT',
+            data: { actualizar_estado: 1, reserva_id, estado: 'cancelada' },
+            success: function(res) {
+                showAlert(res.mensaje, 'success');
+                cargarReservas(false);
+            },
+            error: function(xhr) {
+                const resp = xhr.responseJSON;
+                showAlert(resp ? resp.error : 'Error al cancelar', 'error');
+            }
+        });
     });
 }
 
-// Eliminar reserva cancelada
 function eliminarReserva(reserva_id) {
-    if (!confirm('¿Eliminar esta reserva cancelada?')) return;
-    $.ajax({
-        url: 'api/reservas.php',
-        method: 'DELETE',
-        data: { reserva_id },
-        success: function(res) {
-            alert(res.mensaje);
-            cargarReservas(false);
-        },
-        error: function(xhr) {
-            const resp = xhr.responseJSON;
-            alert(resp ? resp.error : 'Error al eliminar');
-        }
+    showConfirm('¿Eliminar esta reserva cancelada?', function() {
+        $.ajax({
+            url: 'api/reservas.php',
+            method: 'DELETE',
+            data: { reserva_id },
+            success: function(res) {
+                showAlert(res.mensaje, 'success');
+                cargarReservas(false);
+            },
+            error: function(xhr) {
+                const resp = xhr.responseJSON;
+                showAlert(resp ? resp.error : 'Error al eliminar', 'error');
+            }
+        });
     });
 }
 
-// Ver recibo de pago (redirige a la vista de recibo)
 function verRecibo(reserva_id) {
     window.location.href = '?view=recibo&reserva_id=' + reserva_id;
 }
 
-// Cargar por defecto: reservas activas
 cargarReservas(false);
 </script>
-
-<style>
-.table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-.table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-.table th { background: #007bff; color: white; }
-.btn-small { padding: 0.3rem 0.8rem; border: none; border-radius: 20px; font-size: 0.8rem; color: white; cursor: pointer; margin: 0.2rem; transition: all 0.2s; }
-.btn-small:hover { opacity: 0.8; transform: translateY(-1px); }
-.badge { padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; display: inline-block; margin-right: 0.3rem; }
-.tab-btn { font-family: 'Inter', sans-serif; font-size: 1rem; background: none; border: none; cursor: pointer; transition: all 0.2s; }
-.tab-btn:hover { opacity: 0.7; }
-</style>

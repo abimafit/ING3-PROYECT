@@ -1,7 +1,15 @@
 <?php require_once 'includes/auth.php';
 require_once 'includes/ciudades_panama.php';
 $ciudades = obtenerNombresCiudades();
-if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
+if (estaLogueado()) header('Location: ' . redirigirSegunRol());
+$toasts = [];
+if (isset($_GET['error'])) {
+    $toasts[] = ['t' => 'error', 'm' => $_GET['error']];
+}
+if (isset($_GET['registro']) && $_GET['registro'] == 'ok') {
+    $toasts[] = ['t' => 'success', 'm' => 'Registro exitoso. Ahora puedes iniciar sesión.'];
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -9,138 +17,13 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - RentWheels</title>
+    <link rel="icon" type="image/png" href="img/rw-logo.png">
     <link rel="stylesheet" href="css/style-global.css">
     <link rel="stylesheet" href="css/style-public.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .auth-page {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: #f8fafc;
-        }
-
-        .auth-main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-
-        .auth-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 28px;
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
-            max-width: 480px;
-            width: 100%;
-        }
-
-        .auth-card h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-            text-align: center;
-        }
-
-        .auth-card .subtitle {
-            text-align: center;
-            color: #6b7280;
-            margin-bottom: 1.5rem;
-        }
-
-        .auth-card .form-group {
-            margin-bottom: 1.2rem;
-        }
-
-        .auth-card label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.3rem;
-            color: #374151;
-        }
-
-        .auth-card input,
-        .auth-card select {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        .auth-card input:focus,
-        .auth-card select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-            outline: none;
-        }
-
-        .auth-card .btn-submit {
-            width: 100%;
-            padding: 0.8rem;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 0.5rem;
-        }
-
-        .auth-card .btn-submit:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .auth-card .links {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.95rem;
-            color: #6b7280;
-        }
-
-        .auth-card .links a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .auth-card .links a:hover {
-            text-decoration: underline;
-        }
-
-        .error-msg {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #ef4444;
-        }
-
-        .success-msg {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #10b981;
-        }
-
-        .input-hint {
-            font-size: 0.8rem;
-            color: #6b7280;
-            margin-top: 0.2rem;
-        }
-
         #ciudad-group {
             display: none;
         }
@@ -156,35 +39,6 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
         #datos-bancarios.show {
             display: block;
         }
-
-        /* ✅ Estilos para previsualización del QR */
-        .qr-preview-container {
-            margin-top: 0.5rem;
-            text-align: center;
-        }
-
-        .qr-preview-container img {
-            max-width: 150px;
-            max-height: 150px;
-            border-radius: 12px;
-            border: 2px solid #e5e7eb;
-            padding: 0.5rem;
-            background: white;
-            display: none;
-        }
-
-        .qr-preview-container img.show {
-            display: inline-block;
-        }
-
-        .qr-preview-container .placeholder {
-            color: #6b7280;
-            font-size: 0.85rem;
-            padding: 1rem;
-            background: #f9fafb;
-            border-radius: 12px;
-            border: 2px dashed #d1d5db;
-        }
     </style>
 </head>
 
@@ -193,6 +47,7 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
     <header class="main-header">
         <div class="header-container">
             <a href="index.php" class="logo">
+                <span class="logo-icon"><img src="img/rw-logo.png" alt="RentWheels"></span>
                 <span class="logo-text">RentWheels</span>
             </a>
             <nav class="main-nav">
@@ -209,13 +64,6 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
         <div class="auth-card">
             <h2>Crea tu cuenta</h2>
             <p class="subtitle">Únete a RentWheels y comienza a reservar</p>
-
-            <?php if (isset($_GET['error'])): ?>
-                <div class="error-msg"> <?php echo htmlspecialchars(urldecode($_GET['error'])); ?></div>
-            <?php endif; ?>
-            <?php if (isset($_GET['registro']) && $_GET['registro'] == 'ok'): ?>
-                <div class="success-msg"> Registro exitoso. Ya puedes <a href="login.php">iniciar sesión</a>.</div>
-            <?php endif; ?>
 
             <form id="registerForm" method="POST" action="procesar_registro.php" enctype="multipart/form-data" onsubmit="return validarRegistro()">
                 <div class="form-group">
@@ -273,12 +121,11 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
                     <div class="input-hint">Sube una imagen PNG, JPG o GIF (máx. 2MB)</div>
 
                     <div class="qr-preview-container">
-                        <div class="placeholder" id="qrPlaceholder">📷 No se ha seleccionado ninguna imagen</div>
+                        <div class="placeholder" id="qrPlaceholder"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px;margin-right:6px;opacity:0.8;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>No se ha seleccionado ninguna imagen</div>
                         <img id="qrPreview" src="#" alt="Vista previa del QR">
                     </div>
                 </div>
 
-                <div id="formError" style="display:none; color:#b91c1c; background:#fee2e2; padding:0.5rem; border-radius:8px; margin-bottom:1rem;"></div>
                 <button type="submit" class="btn-submit">Registrarse</button>
             </form>
 
@@ -309,9 +156,9 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
             <div class="footer-column">
                 <h4>Síguenos</h4>
                 <div class="social-links">
-                    <a href="#" title="Facebook">📘</a>
-                    <a href="#" title="Instagram">📸</a>
-                    <a href="#" title="Twitter">🐦</a>
+                    <a href="#" title="Facebook"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.33-.05-1.4-.14-2.55-.14C11.74 2 9.97 3.66 9.97 6.7v2.8H7v4h2.97V22h4.02v-8.5Z"/></svg></a>
+                    <a href="#" title="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
+                    <a href="#" title="X (Twitter)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
                 </div>
             </div>
         </div>
@@ -371,40 +218,38 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
             const rol = document.getElementById('rol').value;
             const ciudad = document.getElementById('ciudad').value.trim();
 
-            document.getElementById('formError').style.display = 'none';
-
             const nombreRegex = /^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s\-\'\.]+$/;
             if (!nombreRegex.test(nombre)) {
-                alert(' El nombre solo puede contener letras, espacios, apóstrofes, guiones o puntos.');
+                showAlert('El nombre solo puede contener letras, espacios, apóstrofes, guiones o puntos.', 'warning');
                 document.getElementById('nombre').focus();
                 return false;
             }
             if (nombre.length < 2 || nombre.length > 100) {
-                alert(' El nombre debe tener entre 2 y 100 caracteres.');
+                showAlert('El nombre debe tener entre 2 y 100 caracteres.', 'warning');
                 document.getElementById('nombre').focus();
                 return false;
             }
 
             if (!email || !email.includes('@')) {
-                alert(' Ingresa un correo electrónico válido.');
+                showAlert('Ingresa un correo electrónico válido.', 'warning');
                 document.getElementById('email').focus();
                 return false;
             }
 
             if (pass.length < 4) {
-                alert(' La contraseña debe tener al menos 4 caracteres.');
+                showAlert('La contraseña debe tener al menos 4 caracteres.', 'warning');
                 document.getElementById('password').focus();
                 return false;
             }
 
             if (pass !== confirm) {
-                alert(' Las contraseñas no coinciden.');
+                showAlert('Las contraseñas no coinciden.', 'warning');
                 document.getElementById('confirm_password').focus();
                 return false;
             }
 
             if (rol === 'compania' && ciudad === '') {
-                alert(' La ciudad es obligatoria para las compañías.');
+                showAlert('La ciudad es obligatoria para las compañías.', 'warning');
                 document.getElementById('ciudad').focus();
                 return false;
             }
@@ -413,6 +258,13 @@ if (estaLogueado()) header('Location: ' . redirigirSegunRol()); ?>
         }
     </script>
 
+    <script src="js/modals.js"></script>
+    <script>
+        (function() {
+            var toasts = <?php echo json_encode($toasts, JSON_UNESCAPED_UNICODE); ?>;
+            toasts.forEach(function(t) { showAlert(t.m, t.t); });
+        })();
+    </script>
 </body>
 
 </html>

@@ -1,15 +1,15 @@
-<h3>📋 Todas las reservas del sistema</h3>
+<h3><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--rw-red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:8px;"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Todas las reservas del sistema</h3>
 
 <!-- Filtros (opcional) -->
 <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
-    <select id="filtroEstado" style="padding:0.5rem; border-radius:10px; border:1px solid #d1d5db;">
+    <select id="filtroEstado" class="form-control" style="max-width:200px;">
         <option value="">Todos los estados</option>
         <option value="pendiente">Pendiente</option>
         <option value="confirmada">Confirmada</option>
         <option value="cancelada">Cancelada</option>
     </select>
-    <input type="text" id="filtroBuscar" placeholder="Buscar por vehículo o usuario..." style="padding:0.5rem; border-radius:10px; border:1px solid #d1d5db; flex:1;">
-    <button onclick="cargarReservas()" style="background:#2563eb; color:white; border:none; padding:0.5rem 1.5rem; border-radius:40px; cursor:pointer;">Filtrar</button>
+    <input type="text" id="filtroBuscar" placeholder="Buscar por vehículo o usuario..." class="form-control" style="flex:1;">
+    <button onclick="cargarReservas()" class="btn btn-primary" style="align-self:flex-end;">Filtrar</button>
 </div>
 
 <div id="reservasContainer">
@@ -18,8 +18,8 @@
 
 <script>
 function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
@@ -68,7 +68,7 @@ function cargarReservas() {
                     <td>
                         ${r.estado !== 'confirmada' ? `<button onclick="actualizarReserva(${r.id}, 'estado', 'confirmada')" style="background:#10b981; color:white; border:none; padding:0.2rem 0.6rem; border-radius:12px; cursor:pointer; font-size:0.7rem;">Confirmar</button> ` : ''}
                         ${r.estado !== 'cancelada' ? `<button onclick="actualizarReserva(${r.id}, 'estado', 'cancelada')" style="background:#ef4444; color:white; border:none; padding:0.2rem 0.6rem; border-radius:12px; cursor:pointer; font-size:0.7rem;">Cancelar</button> ` : ''}
-                        ${r.pagado == 0 ? `<button onclick="actualizarReserva(${r.id}, 'pagado', 1)" style="background:#3b82f6; color:white; border:none; padding:0.2rem 0.6rem; border-radius:12px; cursor:pointer; font-size:0.7rem;">Marcar pagado</button>` : ''}
+                        ${r.pagado == 0 ? `<button onclick="actualizarReserva(${r.id}, 'pagado', 1)" style="background:var(--rw-red); color:white; border:none; padding:0.2rem 0.6rem; border-radius:12px; cursor:pointer; font-size:0.7rem;">Marcar pagado</button>` : ''}
                     </td>
                 </tr>`;
             });
@@ -81,13 +81,14 @@ function cargarReservas() {
 }
 
 function actualizarReserva(reserva_id, campo, valor) {
-    if (!confirm(`¿Actualizar reserva #${reserva_id}?`)) return;
-    $.post('api/admin.php', { actualizar_reserva: 1, reserva_id, campo, valor })
-        .done(function(res) {
-            if (res.error) alert('❌ ' + res.error);
-            else { alert('✅ ' + res.mensaje); cargarReservas(); }
-        })
-        .fail(function() { alert('Error al actualizar'); });
+    showConfirm(`¿Actualizar reserva #${reserva_id}?`, function() {
+        $.post('api/admin.php', { actualizar_reserva: 1, reserva_id, campo, valor })
+            .done(function(res) {
+                if (res.error) showAlert(res.error, 'error');
+                else { showAlert(res.mensaje, 'success'); cargarReservas(); }
+            })
+            .fail(function() { showAlert('Error al actualizar', 'error'); });
+    });
 }
 
 // Cargar al inicio

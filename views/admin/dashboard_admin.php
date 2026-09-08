@@ -78,7 +78,7 @@ $chartDataJson = json_encode([
 .admin-stat-card .stat-number {
     font-size: 2.2rem;
     font-weight: 700;
-    color: #2563eb;
+    color: var(--rw-red);
     line-height: 1.2;
 }
 .admin-stat-card .stat-label {
@@ -131,11 +131,11 @@ $chartDataJson = json_encode([
 .admin-table .badge-success { background: #d1fae5; color: #065f46; }
 .admin-table .badge-warning { background: #fef3c7; color: #92400e; }
 .admin-table .badge-danger { background: #fee2e2; color: #991b1b; }
-.admin-table .badge-info { background: #dbeafe; color: #1e40af; }
+.admin-table .badge-info { background: var(--rw-red-tint); color: var(--rw-red-dark); }
 </style>
 
 <div class="admin-dashboard">
-    <h2 style="font-size:1.8rem; font-weight:700; color:#1f2937;">📊 Panel de administración</h2>
+    <h2 style="font-size:1.8rem; font-weight:700; color:#1f2937;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--rw-red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px;margin-right:10px;"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>Panel de administración</h2>
     <p style="color:#6b7280; margin-bottom:1.5rem;">Resumen general del sistema RentWheels</p>
 
     <!-- Tarjetas de estadísticas -->
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (rolesData.length > 0) {
         const labels = rolesData.map(item => item.rol.charAt(0).toUpperCase() + item.rol.slice(1));
         const values = rolesData.map(item => item.total);
-        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
+        const colors = ['#C61A30', '#141414', '#f59e0b', '#8b5cf6', '#16a34a'];
         
         new Chart(document.getElementById('rolesChart'), {
             type: 'bar',

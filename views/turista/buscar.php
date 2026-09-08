@@ -1,8 +1,12 @@
-<h3>Buscar vehículos disponibles</h3>
-<form id="searchForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: #f8fafc; padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem;">
-    <div style="flex: 1; min-width: 180px;">
-        <label for="lugar" style="display: block; font-weight: 500; margin-bottom: 0.3rem;">Ciudad</label>
-        <select id="lugar" class="form-control" style="width: 100%; padding: 0.7rem; border-radius: 10px; border: 1px solid #d1d5db;">
+<div class="view-header">
+    <h3>Buscar vehículos</h3>
+    <p style="color:var(--rw-gray-500);margin-top:0.2rem;">Explora el catálogo o filtra por ciudad y fechas para ver disponibilidad.</p>
+</div>
+
+<form id="searchForm" class="search-panel" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; background:var(--rw-white); border:1px solid var(--rw-gray-200); padding:1.4rem; border-radius:var(--rw-radius-lg); margin-bottom:1.5rem; box-shadow:var(--rw-shadow-sm);">
+    <div>
+        <label for="lugar">Ciudad</label>
+        <select id="lugar">
             <option value="">Todas las ciudades</option>
             <?php
             require_once 'includes/ciudades_panama.php';
@@ -13,24 +17,25 @@
         </select>
     </div>
     <div>
-        <label for="fecha_inicio" style="font-weight: 500; display: block; margin-bottom: 0.3rem;">Fecha de inicio</label>
-        <input type="date" id="fecha_inicio" class="form-control" required style="width: 100%; padding: 0.7rem; border-radius: 10px; border: 1px solid #d1d5db;">
+        <label for="fecha_inicio">Fecha de inicio <span style="color:var(--rw-gray-400);font-weight:400;">(opcional)</span></label>
+        <input type="date" id="fecha_inicio">
     </div>
     <div>
-        <label for="fecha_fin" style="font-weight: 500; display: block; margin-bottom: 0.3rem;">Fecha de fin</label>
-        <input type="date" id="fecha_fin" class="form-control" required style="width: 100%; padding: 0.7rem; border-radius: 10px; border: 1px solid #d1d5db;">
+        <label for="fecha_fin">Fecha de fin <span style="color:var(--rw-gray-400);font-weight:400;">(opcional)</span></label>
+        <input type="date" id="fecha_fin">
     </div>
-    <div style="display: flex; align-items: flex-end;">
-        <button type="submit" class="btn" style="width: 100%; background: #2563eb; color: white; border: none; padding: 0.7rem; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s;">🔍 Buscar</button>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; align-items:stretch;">
+        <button type="submit" class="btn btn-primary btn-block"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Buscar</button>
+        <button type="button" class="btn btn-outline btn-block" onclick="limpiarFiltros()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Limpiar filtros</button>
     </div>
 </form>
+
 <div id="resultados" style="margin-top:20px;"></div>
 
 <script>
-    // Función de escape HTML
     function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
+        if (str === null || str === undefined) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
@@ -38,141 +43,191 @@
         });
     }
 
-    // Fechas mínimas
-    const today = new Date().toISOString().split('T')[0];
+    var today = new Date().toISOString().split('T')[0];
     document.getElementById('fecha_inicio').setAttribute('min', today);
     document.getElementById('fecha_fin').setAttribute('min', today);
 
-    // Validar fechas
+    document.getElementById('fecha_inicio').addEventListener('change', function() {
+        var inicio = this.value;
+        document.getElementById('fecha_fin').setAttribute('min', inicio || today);
+        validarFechas();
+    });
+    document.getElementById('fecha_fin').addEventListener('change', validarFechas);
+
     function validarFechas() {
-        const inicio = document.getElementById('fecha_inicio').value;
-        const fin = document.getElementById('fecha_fin').value;
+        var inicio = document.getElementById('fecha_inicio').value;
+        var fin = document.getElementById('fecha_fin').value;
         if (inicio && fin && fin < inicio) {
-            alert('La fecha de fin no puede ser anterior a la fecha de inicio.');
+            showAlert('La fecha de fin no puede ser anterior a la de inicio', 'warning');
             document.getElementById('fecha_fin').value = '';
             return false;
         }
         return true;
     }
 
-    document.getElementById('fecha_inicio').addEventListener('change', function() {
-        const inicio = this.value;
-        document.getElementById('fecha_fin').setAttribute('min', inicio);
-        validarFechas();
-    });
-    document.getElementById('fecha_fin').addEventListener('change', validarFechas);
+    function leerFechas() {
+        return {
+            inicio: $('#fecha_inicio').val(),
+            fin: $('#fecha_fin').val()
+        };
+    }
 
-    // Búsqueda
-    $('#searchForm').submit(function(e) {
-        e.preventDefault();
-        const fechaInicio = $('#fecha_inicio').val();
-        const fechaFin = $('#fecha_fin').val();
-        const lugar = $('#lugar').val();
+    function diasEntre(inicio, fin) {
+        if (!inicio || !fin) return 0;
+        var d1 = new Date(inicio);
+        var d2 = new Date(fin);
+        return Math.max(1, Math.round((d2 - d1) / 86400000));
+    }
 
-        if (!fechaInicio || !fechaFin) {
-            showAlert('Debes ingresar ambas fechas', 'warning');
+    function mostrarError(mensaje) {
+        $('#resultados').html('<div class="error">' + escapeHtml(mensaje) + '</div>');
+    }
+
+    function renderResultados(data) {
+        if (!data || typeof data !== 'object' || data.error) {
+            mostrarError(data && data.error ? data.error : 'La respuesta del servidor no fue válida.');
             return;
         }
-        if (fechaInicio > fechaFin) {
-            alert('La fecha de inicio no puede ser mayor a la fecha de fin');
+        if (!Array.isArray(data) || data.length === 0) {
+            $('#resultados').html(
+                '<div class="empty-state">' +
+                    '<span class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></span>' +
+                    '<h4>No hay vehículos disponibles</h4>' +
+                    '<p>Prueba con otras fechas o ciudad.</p>' +
+                '</div>'
+            );
             return;
         }
+
+        var fechas = leerFechas();
+        var tieneFechas = fechas.inicio && fechas.fin;
+        var dias = diasEntre(fechas.inicio, fechas.fin);
+
+        var html = '<div class="vehiculos-grid">';
+        data.forEach(function(v) {
+            var marca = escapeHtml(v.marca);
+            var modelo = escapeHtml(v.modelo);
+            var compania = escapeHtml(v.compania);
+            var ciudad = escapeHtml(v.ciudad || '');
+            var anio = escapeHtml(v.anio || '');
+            var precio = parseFloat(v.precio_por_dia) || 0;
+            var imagenUrl = v.imagen_url ? escapeHtml(v.imagen_url) : '';
+            var imgSrc = imagenUrl || 'https://via.placeholder.com/280x180?text=RentWheels';
+            var total = tieneFechas ? (precio * dias).toFixed(2) : null;
+
+            html += '<div class="vehiculo-card">' +
+                        '<div class="vehiculo-imagen">' +
+                            '<img src="' + imgSrc + '" alt="' + marca + ' ' + modelo + '" loading="lazy">' +
+                        '</div>' +
+                        '<div class="vehiculo-info">' +
+                            '<h4>' + marca + ' ' + modelo + ' ' + anio + '</h4>' +
+                            '<p><strong>Precio:</strong> $' + precio + '/día</p>' +
+                            (tieneFechas ? '<p><strong>Total (' + dias + ' días):</strong> <span style="color:var(--rw-red);font-weight:700;">$' + total + '</span></p>' : '') +
+                            '<p><strong>Compañía:</strong> ' + compania + (ciudad ? ' · ' + ciudad : '') + '</p>' +
+                            '<button onclick="reservar(' + v.id + ')" class="btn-reservar">Reservar</button>' +
+                        '</div>' +
+                    '</div>';
+        });
+        html += '</div>';
+        $('#resultados').html(html);
+    }
+
+    function buscarVehiculos(conFechas) {
+        var fechas = leerFechas();
+        var lugar = $('#lugar').val();
 
         $('#resultados').html('<div class="loading">Buscando vehículos...</div>');
 
-        $.get('api/vehiculos.php', {
-            lugar: lugar,
-            fecha_inicio: fechaInicio,
-            fecha_fin: fechaFin
-        }, function(data) {
-            if (data.error) {
-                $('#resultados').html('<div class="error">' + escapeHtml(data.error) + '</div>');
-                return;
+        var resolvido = false;
+        var temporizador = setTimeout(function() {
+            if (!resolvido) {
+                resolvido = true;
+                mostrarError('La búsqueda está tardando más de lo esperado. Inténtalo de nuevo.');
             }
-            if (data.length === 0) {
-                $('#resultados').html('<p>No hay vehículos disponibles en esas fechas.</p>');
-                return;
-            }
-            let html = '<div class="vehiculos-grid">';
-            data.forEach(v => {
-                const marca = escapeHtml(v.marca);
-                const modelo = escapeHtml(v.modelo);
-                const compania = escapeHtml(v.compania);
-                const precio = v.precio_por_dia;
-                const imagenUrl = v.imagen_url ? escapeHtml(v.imagen_url) : '';
-                const imgSrc = imagenUrl ? imagenUrl : 'https://via.placeholder.com/280x180?text=Sin+imagen';
+        }, 15000);
 
-                html += `<div class="vehiculo-card">
-                        <div class="vehiculo-imagen">
-                            <img src="${imgSrc}" alt="${marca} ${modelo}">
-                        </div>
-                        <div class="vehiculo-info">
-                            <h4>${marca} ${modelo}</h4>
-                            <p><strong>Precio/día:</strong> $${precio}</p>
-                            <p><strong>Compañía:</strong> ${compania}</p>
-                            <button onclick="reservar(${v.id})" class="btn-reservar">Reservar</button>
-                        </div>
-                    </div>`;
-            });
-            html += '</div>';
-            $('#resultados').html(html);
-        }).fail(function(jqXHR) {
-            let msg = 'Error al cargar los vehículos.';
-            if (jqXHR.responseText) {
+        function terminar() {
+            if (resolvido) return;
+            resolvido = true;
+            clearTimeout(temporizador);
+        }
+
+        try {
+            $.get('api/vehiculos.php', {
+                lugar: lugar,
+                fecha_inicio: conFechas ? fechas.inicio : '',
+                fecha_fin: conFechas ? fechas.fin : ''
+            }, function(data) {
+                terminar();
                 try {
-                    const err = JSON.parse(jqXHR.responseText);
-                    msg += ' ' + (err.error || '');
+                    renderResultados(data);
+                } catch (e) {
+                    mostrarError('Ocurrió un error al mostrar los resultados. Recarga la página e inténtalo de nuevo.');
+                }
+            }).fail(function(jqXHR) {
+                terminar();
+                var msg = 'Error al cargar los vehículos.';
+                try {
+                    var err = JSON.parse(jqXHR.responseText);
+                    if (err && err.error) msg = err.error;
                 } catch (e) {}
-            }
-            $('#resultados').html('<div class="error">' + escapeHtml(msg) + '</div>');
-        });
+                mostrarError(msg);
+            });
+        } catch (e) {
+            terminar();
+            mostrarError('Error al iniciar la búsqueda.');
+        }
+    }
+
+    function limpiarFiltros() {
+        $('#lugar').val('');
+        $('#fecha_inicio').val('');
+        $('#fecha_fin').val('');
+        buscarVehiculos(false);
+    }
+
+    // Auto-cargar catálogo al entrar
+    buscarVehiculos(false);
+
+    $('#searchForm').submit(function(e) {
+        e.preventDefault();
+        if (!validarFechas()) return;
+        buscarVehiculos(true);
     });
 
     function reservar(vehiculo_id) {
-        const fechaInicio = $('#fecha_inicio').val();
-        const fechaFin = $('#fecha_fin').val();
-        if (!fechaInicio || !fechaFin) {
-            alert('Primero selecciona las fechas de reserva');
+        var fechas = leerFechas();
+        if (!fechas.inicio || !fechas.fin) {
+            showAlert('Selecciona las fechas de reserva para continuar', 'warning');
+            document.getElementById('fecha_inicio').focus();
             return;
         }
-        showConfirm('¿Confirmar reserva para estas fechas?', function() {
-    // Código de reserva aquí
-
-
-        console.log('Enviando reserva:', {
-            vehiculo_id,
-            fecha_inicio: fechaInicio,
-            fecha_fin: fechaFin
-        });
-
-        $.post('api/reservas.php', {
-            vehiculo_id: vehiculo_id,
-            fecha_inicio: fechaInicio,
-            fecha_fin: fechaFin
-        }, function(res) {
-            if (res.error) {
-                alert('❌ ' + res.error);
-            } else {
-                alert('✅ ' + res.mensaje + '\nDías: ' + res.dias + '\nMonto: $' + res.monto);
-                window.location.href = 'dashboard.php?view=mis_reservas';
-            }
-        }, 'json').fail(function(jqXHR) {
-            let msg = 'Error al procesar la reserva';
-            try {
-                const resp = JSON.parse(jqXHR.responseText);
-                if (resp.error) msg = resp.error;
-            } catch (e) {}
-            alert('❌ ' + msg);
-        });
+        if (fechas.fin < fechas.inicio) {
+            showAlert('Revisa las fechas seleccionadas', 'warning');
+            return;
+        }
+        showConfirm('¿Confirmar reserva para las fechas seleccionadas?', function() {
+            $.post('api/reservas.php', {
+                vehiculo_id: vehiculo_id,
+                fecha_inicio: fechas.inicio,
+                fecha_fin: fechas.fin
+            }, function(res) {
+                if (res.error) {
+                    showAlert(res.error, 'error');
+                } else {
+                    showAlert(res.mensaje + ' · ' + res.dias + ' días · $' + res.monto, 'success');
+                    setTimeout(function() {
+                        window.location.href = 'dashboard.php?view=mis_reservas';
+                    }, 1800);
+                }
+            }, 'json').fail(function(jqXHR) {
+                var msg = 'Error al procesar la reserva';
+                try {
+                    var resp = JSON.parse(jqXHR.responseText);
+                    if (resp && resp.error) msg = resp.error;
+                } catch (e) {}
+                showAlert(msg, 'error');
+            });
         });
     }
 </script>
-
-<style>
-    .loading {
-        text-align: center;
-        padding: 20px;
-        font-style: italic;
-        color: #555;
-    }
-</style>

@@ -163,7 +163,7 @@ if (!$compania) {
 
     <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
         <button onclick="confirmarPago(<?php echo $reserva_id; ?>)" class="btn-confirmar">Confirmar pago</button>
-        <a href="?view=mis_reservas" class="btn-volver">⬅ Volver a mis reservas</a>
+        <a href="?view=mis_reservas" class="btn-volver"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>Volver a mis reservas</a>
     </div>
 </div>
 
@@ -178,11 +178,12 @@ if (!$compania) {
                 })
                 .done(function(res) {
                     if (res.error) {
-                        alert('❌ ' + res.error);
+                        showAlert(res.error, 'error');
                     } else {
-                        alert('✅ ' + res.mensaje);
-                        // Redirigir a mis reservas
-                        window.location.href = '?view=mis_reservas';
+                        showAlert(res.mensaje, 'success');
+                        setTimeout(function() {
+                            window.location.href = '?view=mis_reservas';
+                        }, 1500);
                     }
                 })
                 .fail(function(jqXHR) {
@@ -191,7 +192,7 @@ if (!$compania) {
                         const resp = JSON.parse(jqXHR.responseText);
                         if (resp.error) msg = resp.error;
                     } catch (e) {}
-                    alert('❌ ' + msg);
+                    showAlert(msg, 'error');
                 });
         });
     }

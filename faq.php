@@ -1,6 +1,5 @@
 <?php
 require_once 'includes/auth.php';
-// No redirige, es pública
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -9,185 +8,12 @@ require_once 'includes/auth.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Centro de Ayuda - RentWheels</title>
+    <link rel="icon" type="image/png" href="img/rw-logo.png">
     <link rel="stylesheet" href="css/style-global.css">
     <link rel="stylesheet" href="css/style-public.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos adicionales para el centro de ayuda */
-        .faq-hero {
-            background: linear-gradient(135deg, #eff6ff, #ffffff);
-            padding: 3rem 2rem;
-            text-align: center;
-        }
-
-        .faq-hero h1 {
-            font-size: 2.5rem;
-            color: #1f2937;
-        }
-
-        .faq-hero p {
-            color: #6b7280;
-            font-size: 1.1rem;
-        }
-
-        .faq-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            justify-content: center;
-            margin: 2rem 0 1.5rem;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 0.5rem;
-        }
-
-        .faq-tab {
-            background: none;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            font-weight: 600;
-            color: #6b7280;
-            cursor: pointer;
-            border-radius: 30px;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-        }
-
-        .faq-tab:hover {
-            background: #f3f4f6;
-        }
-
-        .faq-tab.active {
-            background: #2563eb;
-            color: white;
-        }
-
-        .faq-section {
-            display: none;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 1rem 0;
-        }
-
-        .faq-section.active {
-            display: block;
-        }
-
-        .faq-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            border: 1px solid #f0f0f0;
-        }
-
-        .faq-card h3 {
-            font-size: 1.3rem;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .faq-card h4 {
-            font-size: 1.05rem;
-            color: #2563eb;
-            margin: 1rem 0 0.3rem;
-        }
-
-        .faq-card p,
-        .faq-card li {
-            color: #4b5563;
-            line-height: 1.6;
-        }
-
-        .faq-card ul,
-        .faq-card ol {
-            padding-left: 1.5rem;
-            margin: 0.5rem 0;
-        }
-
-        .faq-card .note {
-            background: #fef3c7;
-            padding: 0.8rem 1rem;
-            border-radius: 10px;
-            border-left: 4px solid #f59e0b;
-            margin: 0.8rem 0;
-        }
-
-        .faq-card .tip {
-            background: #dbeafe;
-            padding: 0.8rem 1rem;
-            border-radius: 10px;
-            border-left: 4px solid #3b82f6;
-            margin: 0.8rem 0;
-        }
-
-        .faq-card .success-box {
-            background: #d1fae5;
-            padding: 0.8rem 1rem;
-            border-radius: 10px;
-            border-left: 4px solid #10b981;
-            margin: 0.8rem 0;
-        }
-
-        .faq-search {
-            max-width: 500px;
-            margin: 0 auto 1.5rem;
-        }
-
-        .faq-search input {
-            width: 100%;
-            padding: 0.7rem 1rem;
-            border-radius: 40px;
-            border: 1px solid #d1d5db;
-            font-size: 1rem;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .faq-search input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-        }
-
-        .badge-role {
-            display: inline-block;
-            background: #e5e7eb;
-            color: #374151;
-            padding: 0.15rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-left: 0.5rem;
-        }
-
-        .badge-role.turista {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-role.compania {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .badge-role.admin {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-role.soporte {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        @media (max-width: 768px) {
-            .faq-tab {
-                padding: 0.4rem 1rem;
-                font-size: 0.85rem;
-            }
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -196,6 +22,7 @@ require_once 'includes/auth.php';
     <header class="main-header">
         <div class="header-container">
             <a href="index.php" class="logo">
+                <span class="logo-icon"><img src="img/rw-logo.png" alt="RentWheels"></span>
                 <span class="logo-text">RentWheels</span>
             </a>
             <nav class="main-nav">
@@ -215,238 +42,515 @@ require_once 'includes/auth.php';
 
     <!-- HERO -->
     <section class="faq-hero">
-        <h1>Centro de Ayuda</h1>
+        <h1>Centro de <span>Ayuda</span></h1>
         <p>Todo lo que necesitas saber para usar RentWheels como un experto.</p>
     </section>
 
     <!-- Buscador -->
     <div class="faq-search">
-        <input type="text" id="searchInput" placeholder="🔍 Buscar en la ayuda..." onkeyup="filtrarPreguntas()">
+        <div class="search-wrap">
+            <span class="search-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </span>
+            <input type="text" id="searchInput" placeholder="Buscar en la ayuda..." onkeyup="filtrarPreguntas()">
+        </div>
     </div>
 
     <!-- Tabs -->
     <div class="faq-tabs" id="faqTabs">
-        <button class="faq-tab active" data-tab="general"> General</button>
-        <button class="faq-tab" data-tab="turista">Turista</button>
-        <button class="faq-tab" data-tab="compania"> Compañía</button>
-        <button class="faq-tab" data-tab="admin"> Administrador</button>
-        <button class="faq-tab" data-tab="soporte"> Soporte</button>
+        <button class="faq-tab active" data-tab="general">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            General
+        </button>
+        <button class="faq-tab" data-tab="turista">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Turista
+        </button>
+        <button class="faq-tab" data-tab="compania">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>
+            Compañía
+        </button>
+        <button class="faq-tab" data-tab="admin">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+            Administrador
+        </button>
+        <button class="faq-tab" data-tab="soporte">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm18 0h-3a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-5Z"/><path d="M21 10a9 9 0 0 0-18 0"/></svg>
+            Soporte
+        </button>
     </div>
 
     <!-- CONTENIDO DE SECCIONES -->
 
     <!-- ===== SECCIÓN GENERAL ===== -->
     <div id="seccion-general" class="faq-section active">
-        <div class="faq-card">
-            <h3> Bienvenido a RentWheels</h3>
-            <p>RentWheels es un marketplace de alquiler de vehículos que conecta a turistas con compañías de renta de autos en Panamá. Aquí encontrarás guías paso a paso para cada rol.</p>
-            <div class="tip">
-                 <strong>Consejo:</strong> Usa las pestañas de arriba para navegar según tu perfil.
+        <div class="faq-item open">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Qué es RentWheels?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>RentWheels es un marketplace de alquiler de vehículos que conecta a turistas con compañías de renta de autos en Panamá. Aquí encontrarás guías paso a paso para cada rol.</p>
+                    <div class="tip"><strong>Consejo:</strong> Usa las pestañas de arriba para navegar según tu perfil.</div>
+                </div>
             </div>
         </div>
 
-        <div class="faq-card">
-            <h3> Preguntas frecuentes (Generales)</h3>
-            <h4>¿Cómo me registro?</h4>
-            <p>Haz clic en "Registrarse" en la esquina superior derecha. Completa tu nombre, correo, contraseña y selecciona tu rol (turista o compañía). Si eres compañía, deberás ingresar datos bancarios y subir un código QR.</p>
-
-            <h4>¿Olvidé mi contraseña?</h4>
-            <p>En la página de inicio de sesión, haz clic en "¿Olvidaste tu contraseña?" y sigue las instrucciones. Recibirás un enlace para restablecerla (próximamente). Por ahora, contacta al administrador.</p>
-
-            <h4>¿Cómo contacto con soporte?</h4>
-            <p>Dentro de tu panel, ve a la sección "Soporte" y crea un ticket. El equipo de soporte te responderá a la brevedad.</p>
-
-            <h4>¿Qué navegador debo usar?</h4>
-            <p>Recomendamos Chrome, Firefox, Edge o Safari en su versión más reciente.</p>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo me registro?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>Haz clic en <strong>Registrarse</strong> en la esquina superior derecha. Completa tu nombre, correo, contraseña y selecciona tu rol (turista o compañía). Si eres compañía, deberás ingresar datos bancarios y subir un código QR.</p>
+                </div>
+            </div>
         </div>
+
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Olvidé mi contraseña?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>En la página de inicio de sesión, haz clic en <strong>¿Olvidaste tu contraseña?</strong> y sigue las instrucciones. Recibirás un enlace para restablecerla (próximamente). Por ahora, contacta al administrador.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo contacto con soporte?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>Dentro de tu panel, ve a la sección <strong>Soporte</strong> y crea un ticket. El equipo de soporte te responderá a la brevedad.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Qué navegador debo usar?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>Recomendamos Chrome, Firefox, Edge o Safari en su versión más reciente.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-empty" id="empty-general">No se encontraron resultados en General.</div>
     </div>
 
     <!-- ===== SECCIÓN TURISTA ===== -->
     <div id="seccion-turista" class="faq-section">
-        <div class="faq-card">
-            <h3>Guía para turistas</h3>
-            <p>Aquí encontrarás todo lo que necesitas para buscar, reservar y pagar un vehículo.</p>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo me registro como turista?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ol>
+                        <li>Ve a <strong>Registrarse</strong>.</li>
+                        <li>Completa tus datos (nombre, correo, contraseña).</li>
+                        <li>Selecciona <strong>Turista extranjero</strong>.</li>
+                        <li>Haz clic en <strong>Registrarse</strong>.</li>
+                        <li>Revisa tu correo (simulado) y confirma tu cuenta.</li>
+                    </ol>
+                    <div class="tip">Ya puedes iniciar sesión.</div>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>1. Registrarse como turista</h4>
-            <ol>
-                <li>Ve a <strong>Registrarse</strong>.</li>
-                <li>Completa tus datos (nombre, correo, contraseña).</li>
-                <li>Selecciona <strong>Turista extranjero</strong>.</li>
-                <li>Haz clic en <strong>Registrarse</strong>.</li>
-                <li>Revisa tu correo (simulado) y confirma tu cuenta.</li>
-            </ol>
-            <div class="tip">Ya puedes iniciar sesión.</div>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo busco vehículos?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ol>
+                        <li>Inicia sesión y ve al panel de <strong>Turista</strong>.</li>
+                        <li>Haz clic en <strong>Buscar vehículos</strong>.</li>
+                        <li>Selecciona la <strong>ciudad</strong>, <strong>fecha de inicio</strong> y <strong>fecha de fin</strong>.</li>
+                        <li>Haz clic en <strong>Buscar</strong>.</li>
+                    </ol>
+                    <p>Verás una lista de vehículos disponibles con precio y compañía.</p>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>2. Buscar vehículos</h4>
-            <ol>
-                <li>Inicia sesión y ve al panel de <strong>Turista</strong>.</li>
-                <li>Haz clic en <strong>Buscar vehículos</strong>.</li>
-                <li>Selecciona la <strong>ciudad</strong>, <strong>fecha de inicio</strong> y <strong>fecha de fin</strong>.</li>
-                <li>Haz clic en <strong>Buscar</strong>.</li>
-            </ol>
-            <p>Verás una lista de vehículos disponibles con precio y compañía.</p>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo reservo y pago un vehículo?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ol>
+                        <li>En la lista de resultados, haz clic en <strong>Reservar</strong>.</li>
+                        <li>Confirma las fechas y el monto.</li>
+                        <li>La reserva quedará en estado <strong>pendiente</strong> hasta que la compañía la confirme.</li>
+                        <li>Cuando la compañía confirme, ve a <strong>Mis reservas</strong> y haz clic en <strong>Pagar</strong>.</li>
+                        <li>Verás los datos bancarios de la compañía y el código QR.</li>
+                        <li>Haz clic en <strong>Confirmar pago</strong>.</li>
+                    </ol>
+                    <div class="success-box">¡Reserva pagada! Aparecerá en tu historial.</div>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>3. Reservar y pagar</h4>
-            <ol>
-                <li>En la lista de resultados, haz clic en <strong>Reservar</strong>.</li>
-                <li>Confirma las fechas y el monto.</li>
-                <li>La reserva quedará en estado <strong>pendiente</strong> hasta que la compañía la confirme.</li>
-                <li>Cuando la compañía confirme, ve a <strong>Mis reservas</strong> y haz clic en <strong>Pagar</strong>.</li>
-                <li>Verás los datos bancarios de la compañía y el código QR.</li>
-                <li>Haz clic en <strong>Confirmar pago</strong>.</li>
-            </ol>
-            <div class="success-box">¡Reserva pagada! Aparecerá en tu historial.</div>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo gestiono mis reservas?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ul>
+                        <li><strong>Cancelar:</strong> Si la reserva está pendiente, puedes cancelarla desde <strong>Mis reservas</strong>.</li>
+                        <li><strong>Eliminar:</strong> Si la reserva está cancelada, puedes eliminarla permanentemente.</li>
+                        <li><strong>Historial:</strong> En la pestaña <strong>Historial</strong> verás todas tus reservas pagadas y canceladas.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>4. Gestionar reservas</h4>
-            <ul>
-                <li><strong>Cancelar:</strong> Si la reserva está pendiente, puedes cancelarla desde <strong>Mis reservas</strong>.</li>
-                <li><strong>Eliminar:</strong> Si la reserva está cancelada, puedes eliminarla permanentemente.</li>
-                <li><strong>Historial:</strong> En la pestaña <strong>Historial</strong> verás todas tus reservas pagadas y canceladas.</li>
-            </ul>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo recibo soporte como turista?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>Si tienes problemas, ve a <strong>Soporte</strong> y crea un ticket. Describe tu problema y el equipo te responderá.</p>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>5. Soporte</h4>
-            <p>Si tienes problemas, ve a <strong>Soporte</strong> y crea un ticket. Describe tu problema y el equipo te responderá.</p>
-        </div>
+        <div class="faq-empty" id="empty-turista">No se encontraron resultados en Turista.</div>
     </div>
 
     <!-- ===== SECCIÓN COMPAÑÍA ===== -->
     <div id="seccion-compania" class="faq-section">
-        <div class="faq-card">
-            <h3>Guía para compañías de renta</h3>
-            <p>Gestiona tu flota y reservas de manera eficiente.</p>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo me registro como compañía?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ol>
+                        <li>Ve a <strong>Registrarse</strong>.</li>
+                        <li>Completa tus datos (nombre, correo, contraseña).</li>
+                        <li>Selecciona <strong>Compañía de renta</strong>.</li>
+                        <li>Ingresa tu <strong>ciudad</strong> (selecciona del menú).</li>
+                        <li>Completa los datos bancarios (cuenta, teléfono, banco).</li>
+                        <li>Sube una imagen con tu <strong>código QR</strong> (opcional).</li>
+                        <li>Haz clic en <strong>Registrarse</strong>.</li>
+                    </ol>
+                    <div class="note">Recibirás un <strong>código de verificación de 6 dígitos</strong>. Guárdalo, lo necesitarás para activar tu cuenta.</div>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>1. Registrarse como compañía</h4>
-            <ol>
-                <li>Ve a <strong>Registrarse</strong>.</li>
-                <li>Completa tus datos (nombre, correo, contraseña).</li>
-                <li>Selecciona <strong>Compañía de renta</strong>.</li>
-                <li>Ingresa tu <strong>ciudad</strong> (selecciona del menú).</li>
-                <li>Completa los datos bancarios (cuenta, teléfono, banco).</li>
-                <li>Sube una imagen con tu <strong>código QR</strong> (opcional).</li>
-                <li>Haz clic en <strong>Registrarse</strong>.</li>
-            </ol>
-            <div class="note">Recibirás un <strong>código de verificación de 6 dígitos</strong>. Guárdalo, lo necesitarás para activar tu cuenta.</div>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo verifico mi cuenta de compañía?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ol>
+                        <li>Inicia sesión con tu correo y contraseña.</li>
+                        <li>Ve a tu panel de <strong>Compañía</strong>.</li>
+                        <li>En la sección de verificación, ingresa el código de 6 dígitos.</li>
+                        <li>Haz clic en <strong>Verificar</strong>.</li>
+                    </ol>
+                    <div class="success-box">¡Cuenta activada! Ahora puedes publicar vehículos.</div>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>2. Verificar tu cuenta</h4>
-            <ol>
-                <li>Inicia sesión con tu correo y contraseña.</li>
-                <li>Ve a tu panel de <strong>Compañía</strong>.</li>
-                <li>En la sección de verificación, ingresa el código de 6 dígitos.</li>
-                <li>Haz clic en <strong>Verificar</strong>.</li>
-            </ol>
-            <div class="success-box">¡Cuenta activada! Ahora puedes publicar vehículos.</div>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo gestiono mi flota de vehículos?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ol>
+                        <li>En el panel, ve a <strong>Gestionar flota</strong>.</li>
+                        <li>Para agregar un vehículo: completa los campos (marca, modelo, año, precio, imagen).</li>
+                        <li>Haz clic en <strong>Agregar vehículo</strong>.</li>
+                        <li>Para eliminar: haz clic en el botón <strong>Eliminar</strong> del vehículo.</li>
+                    </ol>
+                    <div class="tip">Solo puedes eliminar vehículos sin reservas activas.</div>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>3. Gestionar flota</h4>
-            <ol>
-                <li>En el panel, ve a <strong>Gestionar flota</strong>.</li>
-                <li>Para agregar un vehículo: completa los campos (marca, modelo, año, precio, imagen).</li>
-                <li>Haz clic en <strong>Agregar vehículo</strong>.</li>
-                <li>Para eliminar: haz clic en el botón <strong>Eliminar</strong> del vehículo.</li>
-            </ol>
-            <div class="tip">Solo puedes eliminar vehículos sin reservas activas.</div>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo gestiono las reservas recibidas?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ol>
+                        <li>Ve a <strong>Reservas recibidas</strong>.</li>
+                        <li>Verás todas las solicitudes de reserva.</li>
+                        <li>Haz clic en <strong>Confirmar</strong> o <strong>Cancelar</strong> según corresponda.</li>
+                    </ol>
+                    <p>Las reservas confirmadas aparecerán en el listado de la flota con estado "Reservado".</p>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>4. Gestionar reservas recibidas</h4>
-            <ol>
-                <li>Ve a <strong>Reservas recibidas</strong>.</li>
-                <li>Verás todas las solicitudes de reserva.</li>
-                <li>Haz clic en <strong>Confirmar</strong> o <strong>Cancelar</strong> según corresponda.</li>
-            </ol>
-            <p>Las reservas confirmadas aparecerán en el listado de la flota con estado "Reservado".</p>
-        </div>
+        <div class="faq-empty" id="empty-compania">No se encontraron resultados en Compañía.</div>
     </div>
 
     <!-- ===== SECCIÓN ADMINISTRADOR ===== -->
     <div id="seccion-admin" class="faq-section">
-        <div class="faq-card">
-            <h3>Guía para administradores</h3>
-            <p>Control total del sistema: usuarios, reservas, tickets y reportes.</p>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo gestiono los usuarios?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ul>
+                        <li><strong>Ver todos los usuarios:</strong> Ve a <strong>Usuarios</strong>.</li>
+                        <li><strong>Banear/Desbanear:</strong> Usa el botón correspondiente en cada fila.</li>
+                        <li><strong>Verificar empresas:</strong> Las empresas pendientes aparecen con estado "Pendiente". Haz clic en <strong>Verificar manual</strong> para activarlas.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>1. Gestionar usuarios</h4>
-            <ul>
-                <li><strong>Ver todos los usuarios:</strong> Ve a <strong>Usuarios</strong>.</li>
-                <li><strong>Banear/Desbanear:</strong> Usa el botón correspondiente en cada fila.</li>
-                <li><strong>Verificar empresas:</strong> Las empresas pendientes aparecen con estado "Pendiente". Haz clic en <strong>Verificar manual</strong> para activarlas.</li>
-            </ul>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo gestiono las reservas?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ul>
+                        <li>Ve a <strong>Reservas</strong> para ver todas las reservas del sistema.</li>
+                        <li>Puedes <strong>confirmar</strong>, <strong>cancelar</strong> o <strong>marcar como pagado</strong> cualquier reserva.</li>
+                        <li>Usa los filtros para buscar por estado o vehículo.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>2. Gestionar reservas</h4>
-            <ul>
-                <li>Ve a <strong>Reservas</strong> para ver todas las reservas del sistema.</li>
-                <li>Puedes <strong>confirmar</strong>, <strong>cancelar</strong> o <strong>marcar como pagado</strong> cualquier reserva.</li>
-                <li>Usa los filtros para buscar por estado o vehículo.</li>
-            </ul>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo gestiono los tickets de soporte?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ul>
+                        <li>Ve a <strong>Tickets</strong> para ver todos los tickets de soporte.</li>
+                        <li>Puedes <strong>responder</strong>, <strong>cerrar</strong> o <strong>eliminar</strong> tickets.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>3. Gestionar tickets</h4>
-            <ul>
-                <li>Ve a <strong>Tickets</strong> para ver todos los tickets de soporte.</li>
-                <li>Puedes <strong>responder</strong>, <strong>cerrar</strong> o <strong>eliminar</strong> tickets.</li>
-            </ul>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Dónde veo los reportes y estadísticas?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>En el <strong>Dashboard</strong> verás tarjetas con estadísticas clave: usuarios, vehículos, reservas, ingresos y tickets. También gráficas de reservas por estado y usuarios por rol.</p>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>4. Reportes y estadísticas</h4>
-            <p>En el <strong>Dashboard</strong> verás tarjetas con estadísticas clave: usuarios, vehículos, reservas, ingresos y tickets. También gráficas de reservas por estado y usuarios por rol.</p>
-        </div>
+        <div class="faq-empty" id="empty-admin">No se encontraron resultados en Administrador.</div>
     </div>
 
     <!-- ===== SECCIÓN SOPORTE ===== -->
     <div id="seccion-soporte" class="faq-section">
-        <div class="faq-card">
-            <h3>Guía para soporte técnico</h3>
-            <p>Gestiona los tickets de los usuarios de manera eficiente.</p>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo veo los tickets asignados?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>Ve a <strong>Tickets</strong> en tu panel. Verás todos los tickets abiertos, en proceso y cerrados.</p>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>1. Ver tickets</h4>
-            <p>Ve a <strong>Tickets</strong> en tu panel. Verás todos los tickets abiertos, en proceso y cerrados.</p>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo respondo un ticket?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ol>
+                        <li>Haz clic en <strong>Responder</strong> en el ticket.</li>
+                        <li>Escribe tu respuesta en el campo de texto.</li>
+                        <li>Haz clic en <strong>Enviar respuesta</strong>.</li>
+                    </ol>
+                    <p>El usuario recibirá la respuesta en su panel.</p>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>2. Responder un ticket</h4>
-            <ol>
-                <li>Haz clic en <strong>Responder</strong> en el ticket.</li>
-                <li>Escribe tu respuesta en el campo de texto.</li>
-                <li>Haz clic en <strong>Enviar respuesta</strong>.</li>
-            </ol>
-            <p>El usuario recibirá la respuesta en su panel.</p>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo cierro o elimino tickets?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <ul>
+                        <li><strong>Cerrar:</strong> Cuando el problema esté resuelto, haz clic en <strong>Cerrar</strong>.</li>
+                        <li><strong>Eliminar:</strong> Si el ticket es spam o duplicado, puedes <strong>Eliminarlo</strong> permanentemente.</li>
+                    </ul>
+                    <div class="note">La eliminación es irreversible.</div>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>3. Cerrar y eliminar tickets</h4>
-            <ul>
-                <li><strong>Cerrar:</strong> Cuando el problema esté resuelto, haz clic en <strong>Cerrar</strong>.</li>
-                <li><strong>Eliminar:</strong> Si el ticket es spam o duplicado, puedes <strong>Eliminarlo</strong> permanentemente.</li>
-            </ul>
-            <div class="note">La eliminación es irreversible.</div>
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span class="q-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </span>
+                <span class="faq-qtext">¿Cómo contactar al administrador?</span>
+                <span class="faq-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <p>Si necesitas ayuda con un ticket complejo, contacta al administrador del sistema.</p>
+                </div>
+            </div>
         </div>
 
-        <div class="faq-card">
-            <h4>4. Contacto con el administrador</h4>
-            <p>Si necesitas ayuda con un ticket complejo, contacta al administrador del sistema.</p>
-        </div>
+        <div class="faq-empty" id="empty-soporte">No se encontraron resultados en Soporte.</div>
     </div>
 
     <!-- FOOTER -->
@@ -471,9 +575,9 @@ require_once 'includes/auth.php';
             <div class="footer-column">
                 <h4>Síguenos</h4>
                 <div class="social-links">
-                    <a href="#" title="Facebook">📘</a>
-                    <a href="#" title="Instagram">📸</a>
-                    <a href="#" title="Twitter">🐦</a>
+                    <a href="#" title="Facebook"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.33-.05-1.4-.14-2.55-.14C11.74 2 9.97 3.66 9.97 6.7v2.8H7v4h2.97V22h4.02v-8.5Z"/></svg></a>
+                    <a href="#" title="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
+                    <a href="#" title="X (Twitter)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
                 </div>
             </div>
         </div>
@@ -482,40 +586,79 @@ require_once 'includes/auth.php';
         </div>
     </footer>
 
-    <!-- SCRIPT: TABS Y BUSCADOR -->
+    <!-- SCRIPT: TABS, ACORDEÓN Y BUSCADOR -->
     <script>
         // Cambiar pestañas
-        document.querySelectorAll('.faq-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Quitar active de todos los tabs
-                document.querySelectorAll('.faq-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
+        function cambiarTab(tab) {
+            document.querySelectorAll('.faq-tab').forEach(function(t) { t.classList.remove('active'); });
+            tab.classList.add('active');
 
-                // Ocultar todas las secciones
-                document.querySelectorAll('.faq-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.faq-section').forEach(function(sec) { sec.classList.remove('active'); });
+            document.getElementById('seccion-' + tab.dataset.tab).classList.add('active');
 
-                // Mostrar la sección correspondiente
-                const tabName = this.dataset.tab;
-                const sectionId = 'seccion-' + tabName;
-                document.getElementById(sectionId).classList.add('active');
+            var input = document.getElementById('searchInput');
+            if (input.value.trim()) filtrarPreguntas();
+        }
+
+        document.querySelectorAll('.faq-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() { cambiarTab(this); });
+        });
+
+        // Acordeón
+        function abrirItem(item) {
+            var answer = item.querySelector('.faq-answer');
+            item.classList.add('open');
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+        }
+
+        function cerrarItem(item) {
+            var answer = item.querySelector('.faq-answer');
+            item.classList.remove('open');
+            answer.style.maxHeight = '0px';
+        }
+
+        document.querySelectorAll('.faq-question').forEach(function(q) {
+            q.addEventListener('click', function() {
+                var item = this.closest('.faq-item');
+                var section = item.closest('.faq-section');
+                var wasOpen = item.classList.contains('open');
+                section.querySelectorAll('.faq-item.open').forEach(function(other) {
+                    if (other !== item) cerrarItem(other);
+                });
+                if (wasOpen) cerrarItem(item);
+                else abrirItem(item);
             });
         });
 
-        // Buscador simple (filtra tarjetas dentro de la sección activa)
+        // Abrir los ítems abiertos por defecto tras el render inicial
+        window.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.faq-item.open').forEach(function(item) {
+                abrirItem(item);
+            });
+        });
+
+        // Buscador (filtra ítems dentro de la sección activa)
         function filtrarPreguntas() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const activeSection = document.querySelector('.faq-section.active');
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toLowerCase().trim();
+            var activeSection = document.querySelector('.faq-section.active');
             if (!activeSection) return;
 
-            const cards = activeSection.querySelectorAll('.faq-card');
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(filter) ? 'block' : 'none';
+            var items = activeSection.querySelectorAll('.faq-item');
+            var visible = 0;
+            items.forEach(function(item) {
+                var text = item.textContent.toLowerCase();
+                var match = text.includes(filter);
+                item.style.display = match ? 'block' : 'none';
+                if (match) visible++;
             });
+
+            var emptyEl = activeSection.querySelector('.faq-empty');
+            if (emptyEl) emptyEl.style.display = visible === 0 ? 'block' : 'none';
         }
     </script>
 
+    <script src="js/modals.js"></script>
 </body>
 
 </html>

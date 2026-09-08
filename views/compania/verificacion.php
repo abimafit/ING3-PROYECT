@@ -14,8 +14,8 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
             <p style="font-weight:600; color:#92400e;">Tu cuenta aún no está verificada.</p>
             <p style="color:#6b7280;">Introduce el código de verificación que recibiste al registrarte:</p>
             <form id="formVerificacion" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
-                <input type="text" name="codigo" id="codigoVerificacion" placeholder="Código de 6 dígitos" maxlength="6" style="padding:0.5rem; border-radius:10px; border:1px solid #d1d5db; flex:1; min-width:150px;">
-                <button type="submit" style="background:#2563eb; color:white; border:none; padding:0.5rem 1.5rem; border-radius:40px; cursor:pointer;">Verificar</button>
+                <input type="text" name="codigo" id="codigoVerificacion" placeholder="Código de 6 dígitos" maxlength="6" class="form-control" style="flex:1; min-width:150px;">
+                <button type="submit" class="btn btn-primary">Verificar</button>
             </form>
             <p style="font-size:0.8rem; color:#6b7280; margin-top:0.3rem;">Si no tienes el código, contacta al administrador.</p>
             <div id="mensajeVerificacion" style="margin-top:0.5rem;"></div>
