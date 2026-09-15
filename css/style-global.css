@@ -568,6 +568,7 @@ label {
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.7);
     background: var(--rw-ink);
+    cursor: pointer;
     transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.7s ease;
     will-change: transform, opacity;
 }
@@ -626,14 +627,14 @@ label {
     position: relative;
     z-index: 3;
     display: flex;
-    gap: 0.55rem;
+    gap: 0.5rem;
     justify-content: center;
-    margin-top: 1.3rem;
+    margin-top: 1.15rem;
 }
 
 .gallery-tab {
-    width: 11px;
-    height: 11px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.25);
     border: none;
@@ -648,7 +649,7 @@ label {
 
 .gallery-tab.active {
     background: var(--rw-red-light);
-    transform: scale(1.4);
+    transform: scale(1.35);
 }
 
 @media (max-width: 560px) {

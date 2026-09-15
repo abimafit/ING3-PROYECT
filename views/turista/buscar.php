@@ -1,32 +1,42 @@
 <div class="view-header">
     <h3>Buscar vehículos</h3>
-    <p style="color:var(--rw-gray-500);margin-top:0.2rem;">Explora el catálogo o filtra por ciudad y fechas para ver disponibilidad.</p>
+    <p style="color:var(--rw-gray-500);margin-top:0.2rem;">Elige una ciudad y, si quieres, tus fechas, para ver los vehículos disponibles.</p>
 </div>
 
-<form id="searchForm" class="search-panel" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; background:var(--rw-white); border:1px solid var(--rw-gray-200); padding:1.4rem; border-radius:var(--rw-radius-lg); margin-bottom:1.5rem; box-shadow:var(--rw-shadow-sm);">
-    <div>
+<form id="searchForm" class="search-panel" style="display:flex; flex-wrap:wrap; gap:1rem; align-items:flex-end; background:var(--rw-white); border:1px solid var(--rw-gray-200); padding:1.4rem; border-radius:var(--rw-radius-lg); margin-bottom:1.5rem; box-shadow:var(--rw-shadow-sm);">
+    <div style="flex:1 1 200px; min-width:200px;">
         <label for="lugar">Ciudad</label>
-        <select id="lugar">
-            <option value="">Todas las ciudades</option>
+        <select id="lugar" style="width:100%;">
+            <option value="">Seleccionar ciudad</option>
+            <option value="todas">Todas las ciudades</option>
             <?php
             require_once 'includes/ciudades_panama.php';
             $ciudades = obtenerNombresCiudades();
-            foreach ($ciudades as $ciudad): ?>
-                <option value="<?php echo htmlspecialchars($ciudad); ?>"><?php echo htmlspecialchars($ciudad); ?></option>
+            $conteoPorCiudad = [];
+            if (isset($pdo)) {
+                foreach ($pdo->query("SELECT u.ciudad, COUNT(*) c FROM vehiculos v JOIN usuarios u ON v.compania_id = u.id WHERE v.disponible = 1 GROUP BY u.ciudad")->fetchAll(PDO::FETCH_ASSOC) as $fila) {
+                    $conteoPorCiudad[$fila['ciudad']] = (int) $fila['c'];
+                }
+            }
+            foreach ($ciudades as $ciudad):
+                $n = $conteoPorCiudad[$ciudad] ?? 0; ?>
+                <option value="<?php echo htmlspecialchars($ciudad); ?>"><?php echo htmlspecialchars($ciudad); ?> (<?php echo $n; ?>)</option>
             <?php endforeach; ?>
         </select>
     </div>
-    <div>
-        <label for="fecha_inicio">Fecha de inicio <span style="color:var(--rw-gray-400);font-weight:400;">(opcional)</span></label>
-        <input type="date" id="fecha_inicio">
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:flex-end;">
+        <div>
+            <label for="fecha_inicio">Fecha de inicio <span style="color:var(--rw-gray-400);font-weight:400;">(opcional)</span></label>
+            <input type="date" id="fecha_inicio" style="width:100%; max-width:140px;">
+        </div>
+        <div>
+            <label for="fecha_fin">Fecha de fin <span style="color:var(--rw-gray-400);font-weight:400;">(opcional)</span></label>
+            <input type="date" id="fecha_fin" style="width:100%; max-width:140px;">
+        </div>
     </div>
-    <div>
-        <label for="fecha_fin">Fecha de fin <span style="color:var(--rw-gray-400);font-weight:400;">(opcional)</span></label>
-        <input type="date" id="fecha_fin">
-    </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; align-items:stretch;">
-        <button type="submit" class="btn btn-primary btn-block"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Buscar</button>
-        <button type="button" class="btn btn-outline btn-block" onclick="limpiarFiltros()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Limpiar filtros</button>
+    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem; margin-left:auto;">
+        <button type="submit" class="btn btn-primary"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Buscar</button>
+        <button type="button" class="btn btn-outline" style="border:2px solid var(--rw-red);" onclick="limpiarFiltros()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Limpiar filtros</button>
     </div>
 </form>
 
@@ -135,6 +145,11 @@
     function buscarVehiculos(conFechas) {
         var fechas = leerFechas();
         var lugar = $('#lugar').val();
+        if (!lugar) {
+            mostrarMensajeInicial();
+            return;
+        }
+        var lugarEnvio = (lugar === 'todas') ? '' : lugar;
 
         $('#resultados').html('<div class="loading">Buscando vehículos...</div>');
 
@@ -154,7 +169,7 @@
 
         try {
             $.get('api/vehiculos.php', {
-                lugar: lugar,
+                lugar: lugarEnvio,
                 fecha_inicio: conFechas ? fechas.inicio : '',
                 fecha_fin: conFechas ? fechas.fin : ''
             }, function(data) {
@@ -179,15 +194,25 @@
         }
     }
 
+    function mostrarMensajeInicial() {
+        $('#resultados').html(
+            '<div class="empty-state">' +
+                '<span class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>' +
+                '<h4>Selecciona una ciudad</h4>' +
+                '<p>Elige la ciudad donde vas a alquilar y pulsa Buscar para ver los vehículos disponibles.</p>' +
+            '</div>'
+        );
+    }
+
     function limpiarFiltros() {
         $('#lugar').val('');
         $('#fecha_inicio').val('');
         $('#fecha_fin').val('');
-        buscarVehiculos(false);
+        mostrarMensajeInicial();
     }
 
-    // Auto-cargar catálogo al entrar
-    buscarVehiculos(false);
+    // Al entrar se muestra un mensaje de indicación hasta que se pulse Buscar
+    mostrarMensajeInicial();
 
     $('#searchForm').submit(function(e) {
         e.preventDefault();

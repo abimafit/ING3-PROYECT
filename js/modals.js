@@ -29,6 +29,26 @@
     function showToast(message, type, title, duration) {
         const container = getToastContainer();
         const total = duration || 5000;
+        const key = (type || 'info') + '|' + message;
+
+        const store = container.__rwToasts || (container.__rwToasts = new Map());
+
+        if (store.has(key)) {
+            const entry = store.get(key);
+            if (entry && entry.toast.isConnected) {
+                clearTimeout(entry.timer);
+                entry.toast.classList.remove('rw-toast--hide');
+                const bar = entry.toast.querySelector('.rw-toast__bar');
+                if (bar) {
+                    bar.style.animation = 'none';
+                    void bar.offsetWidth;
+                    bar.style.animation = '';
+                }
+                entry.timer = setTimeout(function () { entry.dismiss(); }, total);
+                return;
+            }
+            store.delete(key);
+        }
 
         const bar = createElement('div', 'rw-toast__bar');
         bar.style.animationDuration = total + 'ms';
@@ -54,14 +74,17 @@
         function dismiss() {
             if (dismissed) return;
             dismissed = true;
+            clearTimeout(entry.timer);
+            if (store.get(key) === entry) store.delete(key);
             toast.classList.add('rw-toast--hide');
-            clearTimeout(timer);
             setTimeout(function () {
                 if (toast.parentNode) toast.parentNode.removeChild(toast);
             }, 250);
         }
-        const timer = setTimeout(dismiss, total);
+        const entry = { toast: toast, dismiss: dismiss, timer: null };
+        entry.timer = setTimeout(dismiss, total);
         close.addEventListener('click', dismiss);
+        store.set(key, entry);
     }
 
     /* ---------------- MODAL ---------------- */

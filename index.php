@@ -4,6 +4,9 @@ if (estaLogueado()) {
     header('Location: ' . redirigirSegunRol());
     exit;
 }
+$stmt = $pdo->query("SELECT marca, modelo, precio_por_dia, imagen_url FROM vehiculos WHERE disponible = 1 ORDER BY id DESC LIMIT 5");
+$autos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if (!$autos) $autos = [];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -53,28 +56,24 @@ if (estaLogueado()) {
             </div>
             <div class="hero-gallery" id="heroGallery">
                 <div class="gallery-stage" id="galleryStage">
-                    <div class="gallery-item active" data-idx="0">
-                        <img src="https://cdn.motor1.com/images/mgl/16A0M/s3/2017-acura-nsx-review.jpg" alt="Acura NSX">
-                        <span class="gallery-badge">Acura NSX $ USD 90/día</span>
-                    </div>
-                    <div class="gallery-item pos1" data-idx="1">
-                        <img src="https://d31sro4iz4ob5n.cloudfront.net/upload/car/hr-v-2025/color/lhd-platinum-white-pearl/1.png?v=952197729" alt="Honda HR-V">
-                        <span class="gallery-badge">Honda HR-V $ USD 80/día</span>
-                    </div>
-                    <div class="gallery-item pos2" data-idx="2">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShm6WnYOZ6iVpLdlu4yc5ZxQHmcD7eAcKinFNoMGLWyw&s=10" alt="Honda CR-V">
-                        <span class="gallery-badge">Honda CR-V $ USD 70/día</span>
-                    </div>
-                    <div class="gallery-item pos3" data-idx="3">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMpumJ56gqJl96EY28eV-QstgFdtPH_jDIRpIcfjQrKQ&s=10" alt="Acura ADX">
-                        <span class="gallery-badge">Acura ADX $ USD 80/día</span>
-                    </div>
+                    <?php if (count($autos) === 0): ?>
+                        <div class="gallery-item active" data-idx="0">
+                            <img src="https://via.placeholder.com/600x370?text=RentWheels" alt="Próximamente autos disponibles">
+                            <span class="gallery-badge">No hay vehículos por ahora</span>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($autos as $i => $auto): ?>
+                            <div class="gallery-item <?php echo $i === 0 ? 'active' : 'pos' . min($i, 3); ?>" data-idx="<?php echo $i; ?>">
+                                <img src="<?php echo htmlspecialchars($auto['imagen_url']); ?>" alt="<?php echo htmlspecialchars($auto['marca'] . ' ' . $auto['modelo']); ?>">
+                                <span class="gallery-badge"><?php echo htmlspecialchars($auto['marca'] . ' ' . $auto['modelo']); ?> $<?php echo (int) $auto['precio_por_dia']; ?>/día</span>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
                 <div class="gallery-tabs" id="galleryTabs">
-                    <button type="button" class="gallery-tab active" data-idx="0" aria-label="Acura NSX"></button>
-                    <button type="button" class="gallery-tab" data-idx="1" aria-label="Honda HR-V"></button>
-                    <button type="button" class="gallery-tab" data-idx="2" aria-label="Honda CR-V"></button>
-                    <button type="button" class="gallery-tab" data-idx="3" aria-label="Acura ADX"></button>
+                    <?php foreach ($autos as $i => $auto): ?>
+                        <button type="button" class="gallery-tab <?php echo $i === 0 ? 'active' : ''; ?>" data-idx="<?php echo $i; ?>" aria-label="<?php echo htmlspecialchars($auto['marca'] . ' ' . $auto['modelo']); ?>"></button>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -213,6 +212,12 @@ if (estaLogueado()) {
             tabs.forEach(function(t) {
                 t.addEventListener('click', function() {
                     apply(parseInt(t.dataset.idx, 10));
+                    start();
+                });
+            });
+            items.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    apply(parseInt(item.dataset.idx, 10));
                     start();
                 });
             });
