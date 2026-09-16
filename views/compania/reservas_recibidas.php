@@ -59,18 +59,22 @@ function cargarReservas() {
             html += `
                 <tr style="border-bottom:1px solid #f3f4f6;" id="reserva-${r.id}">
                     <td style="padding:1rem;">${turista}</td>
-                    <td style="padding:1rem;">${vehiculo}</td>
+                    <td style="padding:1rem;">
+                        <div style="display:flex; align-items:center; gap:0.7rem;">
+                            <div style="position:relative; width:58px; height:42px; flex:0 0 58px; border-radius:10px; overflow:hidden; background:#f3f4f6;">
+                                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#9ca3af;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>
+                                <img src="${r.imagen_url ? escapeHtml(r.imagen_url) : ''}" alt="${vehiculo}" loading="lazy" style="position:relative; width:100%; height:100%; object-fit:cover; display:${r.imagen_url ? 'block' : 'none'};" onerror="this.onerror=null; this.style.display='none';">
+                            </div>
+                            <strong>${vehiculo}</strong>
+                        </div>
+                    </td>
                     <td style="padding:1rem;">${fechaInicio} a ${fechaFin}</td>
                     <td style="padding:1rem;">$${monto}</td>
                     <td style="padding:0.5rem; text-align:center;">
-                        <button onclick="procesarReserva(${r.id}, 'confirmada')" 
-                                style="background:#10b981; color:white; border:none; padding:0.4rem 1rem; border-radius:20px; font-weight:600; cursor:pointer; margin:0.2rem;">
-                            Confirmar
-                        </button>
-                        <button onclick="procesarReserva(${r.id}, 'cancelada')" 
-                                style="background:#ef4444; color:white; border:none; padding:0.4rem 1rem; border-radius:20px; font-weight:600; cursor:pointer; margin:0.2rem;">
-                            Cancelar
-                        </button>
+                        <div class="rw-acciones rw-acciones--center">
+                            <button onclick="procesarReserva(${r.id}, 'confirmada')" title="Confirmar reserva" style="background:#10b981;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></button>
+                            <button onclick="procesarReserva(${r.id}, 'cancelada')" title="Cancelar reserva" style="background:#ef4444;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                        </div>
                     </td>
                 </tr>
             `;

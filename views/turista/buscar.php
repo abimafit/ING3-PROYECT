@@ -64,6 +64,13 @@
     });
     document.getElementById('fecha_fin').addEventListener('change', validarFechas);
 
+    document.getElementById('lugar').addEventListener('change', function() {
+        if (this.value !== '') {
+            var placeholder = this.querySelector('option[value=""]');
+            if (placeholder) placeholder.remove();
+        }
+    });
+
     function validarFechas() {
         var inicio = document.getElementById('fecha_inicio').value;
         var fin = document.getElementById('fecha_fin').value;
@@ -114,6 +121,7 @@
         var dias = diasEntre(fechas.inicio, fechas.fin);
 
         var html = '<div class="vehiculos-grid">';
+        var idx = 0;
         data.forEach(function(v) {
             var marca = escapeHtml(v.marca);
             var modelo = escapeHtml(v.modelo);
@@ -122,12 +130,12 @@
             var anio = escapeHtml(v.anio || '');
             var precio = parseFloat(v.precio_por_dia) || 0;
             var imagenUrl = v.imagen_url ? escapeHtml(v.imagen_url) : '';
-            var imgSrc = imagenUrl || 'https://via.placeholder.com/280x180?text=RentWheels';
+            var imgSrc = imagenUrl || 'img/placeholder-auto.svg';
             var total = tieneFechas ? (precio * dias).toFixed(2) : null;
 
-            html += '<div class="vehiculo-card">' +
+            html += '<div class="vehiculo-card" style="--i:' + idx + ';">' +
                         '<div class="vehiculo-imagen">' +
-                            '<img src="' + imgSrc + '" alt="' + marca + ' ' + modelo + '" loading="lazy">' +
+                            '<img src="' + imgSrc + '" alt="' + marca + ' ' + modelo + '" loading="lazy" onerror="this.onerror=null; this.src=\'img/placeholder-auto.svg\';">' +
                         '</div>' +
                         '<div class="vehiculo-info">' +
                             '<h4>' + marca + ' ' + modelo + ' ' + anio + '</h4>' +
@@ -137,6 +145,7 @@
                             '<button onclick="reservar(' + v.id + ')" class="btn-reservar">Reservar</button>' +
                         '</div>' +
                     '</div>';
+            idx++;
         });
         html += '</div>';
         $('#resultados').html(html);
@@ -150,6 +159,7 @@
             return;
         }
         var lugarEnvio = (lugar === 'todas') ? '' : lugar;
+        var inicio = Date.now();
 
         $('#resultados').html('<div class="loading">Buscando vehículos...</div>');
 
@@ -175,7 +185,14 @@
             }, function(data) {
                 terminar();
                 try {
-                    renderResultados(data);
+                    var restante = Math.max(0, 480 - (Date.now() - inicio));
+                    setTimeout(function() {
+                        try {
+                            renderResultados(data);
+                        } catch (e) {
+                            mostrarError('Ocurrió un error al mostrar los resultados. Recarga la página e inténtalo de nuevo.');
+                        }
+                    }, restante);
                 } catch (e) {
                     mostrarError('Ocurrió un error al mostrar los resultados. Recarga la página e inténtalo de nuevo.');
                 }
@@ -205,7 +222,14 @@
     }
 
     function limpiarFiltros() {
-        $('#lugar').val('');
+        var lugar = document.getElementById('lugar');
+        if (!lugar.querySelector('option[value=""]')) {
+            var placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Seleccionar ciudad';
+            lugar.insertBefore(placeholder, lugar.firstChild);
+        }
+        lugar.value = '';
         $('#fecha_inicio').val('');
         $('#fecha_fin').val('');
         mostrarMensajeInicial();

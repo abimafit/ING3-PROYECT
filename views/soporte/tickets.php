@@ -91,6 +91,7 @@ function renderTickets() {
         return;
     }
     let html = '';
+    let idx = 0;
     data.forEach(t => {
         const asunto = escapeHtml(t.asunto);
         const mensaje = escapeHtml(t.mensaje);
@@ -102,7 +103,7 @@ function renderTickets() {
         const estadoColor = colorEstado(String(t.estado || '').toLowerCase());
 
         html += `
-            <div class="ticket" style="--ticket-color:${estadoColor};">
+            <div class="ticket" style="--ticket-color:${estadoColor};--i:${Math.min(idx, 14)};">
                 <div class="ticket__main">
                     <div class="ticket__head">
                         <h4 class="ticket__title">${asunto}</h4>
@@ -143,6 +144,7 @@ function renderTickets() {
                 </div>
             </div>
         `;
+        idx++;
     });
     $('#tickets').html(html);
 }

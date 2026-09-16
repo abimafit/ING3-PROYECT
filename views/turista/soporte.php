@@ -113,11 +113,12 @@ function renderTickets() {
         return;
     }
     let html = '';
+    let idx = 0;
     data.forEach(t => {
         const estado = escapeHtml(t.estado);
         const estadoColor = colorEstado(String(t.estado || '').toLowerCase());
         html += `
-            <div class="ticket" style="--ticket-color:${estadoColor};">
+            <div class="ticket" style="--ticket-color:${estadoColor};--i:${Math.min(idx, 14)};">
                 <div class="ticket__main">
                     <div class="ticket__head">
                         <strong class="ticket__title">${escapeHtml(t.asunto)}</strong>
@@ -145,6 +146,7 @@ function renderTickets() {
                 </div>
             </div>
         `;
+        idx++;
     });
     $('#listaTickets').html(html);
 }

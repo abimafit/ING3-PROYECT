@@ -79,6 +79,7 @@ function renderUsuarios() {
     }
     let html = '<table class="admin-table">';
     html += '<thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Ciudad</th><th>Estado</th><th>Verificación</th><th>Acciones</th></tr></thead><tbody>';
+    let idx = 0;
     data.forEach(u => {
         const baneado = parseInt(u.baneado) === 1;
         const estadoText = baneado ? ' Baneado' : ' Activo';
@@ -101,7 +102,7 @@ function renderUsuarios() {
             verificacionHtml = '<span class="badge">-</span>';
         }
 
-        html += `<tr>
+        html += `<tr style="--i:${Math.min(idx, 14)};">
             <td>${u.id}</td>
             <td>${escapeHtml(u.nombre)}</td>
             <td>${escapeHtml(u.email)}</td>
@@ -110,11 +111,14 @@ function renderUsuarios() {
             <td><span class="badge ${estadoColor}">${estadoText}</span></td>
             <td>${verificacionHtml}</td>
             <td>
-                <button onclick="toggleBan(${u.id}, ${baneado ? 0 : 1})" style="background:${baneado ? '#10b981' : '#ef4444'}; color:white; border:none; padding:0.3rem 0.8rem; border-radius:12px; cursor:pointer; font-size:0.7rem;">
-                    ${baneado ? 'Desbanear' : 'Banear'}
-                </button>
+                <div class="rw-acciones">
+                    ${baneado
+                        ? `<button onclick="toggleBan(${u.id}, 0)" title="Desbanear usuario" style="background:#10b981;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg></button>`
+                        : `<button onclick="toggleBan(${u.id}, 1)" title="Banear usuario" style="background:#ef4444;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/></svg></button>`}
+                </div>
             </td>
         </tr>`;
+        idx++;
     });
     html += '</tbody></table>';
     $('#usuariosContainer').html(html);

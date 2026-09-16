@@ -52,25 +52,37 @@ function cargarReservas() {
             }
             let html = '<table class="admin-table">';
             html += '<thead><tr><th>ID</th><th>Turista</th><th>Compañía</th><th>Vehículo</th><th>Fechas</th><th>Monto</th><th>Estado</th><th>Pagado</th><th>Acciones</th></tr></thead><tbody>';
+            let idx = 0;
             filtradas.forEach(r => {
                 const estadoClass = r.estado === 'confirmada' ? 'badge-success' : (r.estado === 'pendiente' ? 'badge-warning' : 'badge-danger');
                 const pagadoClass = r.pagado == 1 ? 'badge-success' : 'badge-warning';
                 const pagadoText = r.pagado == 1 ? 'Sí' : 'No';
-                html += `<tr>
+                html += `<tr style="--i:${Math.min(idx, 14)};">
                     <td>${r.id}</td>
                     <td>${escapeHtml(r.turista_nombre || 'N/A')}</td>
                     <td>${escapeHtml(r.compania_nombre || 'N/A')}</td>
-                    <td>${escapeHtml(r.marca)} ${escapeHtml(r.modelo)}</td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:0.7rem;">
+                            <div style="position:relative; width:58px; height:42px; flex:0 0 58px; border-radius:10px; overflow:hidden; background:var(--rw-gray-200);">
+                                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--rw-gray-500);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>
+                                <img src="${r.imagen_url ? escapeHtml(r.imagen_url) : ''}" alt="${escapeHtml(r.marca)} ${escapeHtml(r.modelo)}" loading="lazy" style="position:relative; width:100%; height:100%; object-fit:cover; display:${r.imagen_url ? 'block' : 'none'};" onerror="this.onerror=null; this.style.display='none';">
+                            </div>
+                            <strong>${escapeHtml(r.marca)} ${escapeHtml(r.modelo)}</strong>
+                        </div>
+                    </td>
                     <td>${escapeHtml(r.fecha_inicio)} → ${escapeHtml(r.fecha_fin)}</td>
                     <td>$${Number(r.monto_total).toFixed(2)}</td>
                     <td><span class="badge ${estadoClass}">${escapeHtml(r.estado)}</span></td>
                     <td><span class="badge ${pagadoClass}">${pagadoText}</span></td>
-                    <td>
-                        ${r.estado !== 'confirmada' ? `<button onclick="actualizarReserva(${r.id}, 'estado', 'confirmada')" style="background:#10b981; color:white; border:none; padding:0.2rem 0.6rem; border-radius:12px; cursor:pointer; font-size:0.7rem;">Confirmar</button> ` : ''}
-                        ${r.estado !== 'cancelada' ? `<button onclick="actualizarReserva(${r.id}, 'estado', 'cancelada')" style="background:#ef4444; color:white; border:none; padding:0.2rem 0.6rem; border-radius:12px; cursor:pointer; font-size:0.7rem;">Cancelar</button> ` : ''}
-                        ${r.pagado == 0 ? `<button onclick="actualizarReserva(${r.id}, 'pagado', 1)" style="background:var(--rw-red); color:white; border:none; padding:0.2rem 0.6rem; border-radius:12px; cursor:pointer; font-size:0.7rem;">Marcar pagado</button>` : ''}
+<td>
+                        <div class="rw-acciones">
+                            ${r.estado !== 'confirmada' ? `<button onclick="actualizarReserva(${r.id}, 'estado', 'confirmada')" title="Confirmar reserva" style="background:#10b981;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></button>` : ''}
+                            ${r.estado !== 'cancelada' ? `<button onclick="actualizarReserva(${r.id}, 'estado', 'cancelada')" title="Cancelar reserva" style="background:#ef4444;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>` : ''}
+                            ${r.pagado == 0 ? `<button onclick="actualizarReserva(${r.id}, 'pagado', 1)" title="Marcar como pagada" style="background:var(--rw-red);"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></button>` : ''}
+                        </div>
                     </td>
                 </tr>`;
+                idx++;
             });
             html += '</tbody></table>';
             $('#reservasContainer').html(html);

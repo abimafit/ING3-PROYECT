@@ -26,7 +26,7 @@ if ($method === 'GET') {
         // Reservas (todas)
         if (isset($_GET['reservas'])) {
             $sql = "SELECT r.*, 
-                           v.marca, v.modelo, 
+                           v.marca, v.modelo, v.imagen_url, 
                            u_t.nombre as turista_nombre,
                            u_c.nombre as compania_nombre
                     FROM reservas r 

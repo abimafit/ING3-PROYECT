@@ -34,8 +34,6 @@ CREATE TABLE `reservas` (
   `fecha_inicio` date NOT NULL,
   `fecha_fin` date NOT NULL,
   `monto_total` decimal(10,2) DEFAULT NULL,
-  `recargo_aplicado` decimal(10,2) DEFAULT 0.00,
-  `recargo_porcentaje` int(11) DEFAULT 0,
   `estado` enum('pendiente','confirmada','cancelada') DEFAULT 'pendiente',
   `pagada` tinyint(1) NOT NULL DEFAULT 0,
   `fecha_reserva` timestamp NOT NULL DEFAULT current_timestamp(),

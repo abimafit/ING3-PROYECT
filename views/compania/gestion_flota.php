@@ -106,17 +106,19 @@
     }
 
     // Plantilla de tarjeta de vehículo
-    function cardHtml(v) {
-        const imagen = v.imagen_url ? escapeHtml(v.imagen_url) : 'https://via.placeholder.com/220x140?text=Sin+imagen';
+    function cardHtml(v, i) {
+        const imagen = v.imagen_url ? escapeHtml(v.imagen_url) : 'img/placeholder-auto.svg';
         const estado = estadoVehiculo(v.id);
         return `
-        <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #f0f0f0;">
-            <img src="${imagen}" alt="${escapeHtml(v.marca)} ${escapeHtml(v.modelo)}" style="width:100%; height:140px; object-fit:cover;">
+        <div style="--i:${Math.min(i || 0, 14)}; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #f0f0f0;">
+            <img src="${imagen}" alt="${escapeHtml(v.marca)} ${escapeHtml(v.modelo)}" style="width:100%; height:140px; object-fit:cover;" onerror="this.onerror=null; this.src='img/placeholder-auto.svg';">
             <div style="padding: 0.8rem;">
                 <strong>${escapeHtml(v.marca)} ${escapeHtml(v.modelo)}</strong>
                 <p style="font-size:0.9rem; color:#6b7280;">$${v.precio_por_dia}/día</p>
-                <p style="font-size:0.85rem; font-weight:500; ${estado === 'Reservado' ? 'color:#dc2626;' : 'color:#16a34a;'}">${estado}</p>
-                <button onclick="eliminar(${v.id})" style="background: #ef4444; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; cursor: pointer; margin-top: 0.5rem; transition: all 0.2s;">Eliminar</button>
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem; margin-top:0.5rem;">
+                    <p style="font-size:0.85rem; font-weight:500; margin:0; ${estado === 'Reservado' ? 'color:#dc2626;' : 'color:#16a34a;'}">${estado}</p>
+                    <button onclick="eliminar(${v.id})" title="Eliminar vehículo" style="width:34px; height:34px; flex:0 0 34px; padding:0; display:inline-flex; align-items:center; justify-content:center; border:none; border-radius:10px; background:#ef4444; cursor:pointer; transition: all 0.2s;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
+                </div>
             </div>
         </div>`;
     }
@@ -152,7 +154,7 @@
         if (lista.length === 0) {
             contenedor.innerHTML = '<p style="color:#6b7280;">No se encontraron vehículos con esos filtros.</p>';
         } else {
-            contenedor.innerHTML = lista.map(cardHtml).join('');
+            contenedor.innerHTML = lista.map(function(v, i) { return cardHtml(v, i); }).join('');
         }
     }
 
@@ -173,7 +175,7 @@
                     .map(function(r) { return r.vehiculo_id; });
 
                 const sorted = [...vehiculosData].sort(function(a, b) { return b.id - a.id; });
-                document.getElementById('ultimosVehiculos').innerHTML = sorted.slice(0, 5).map(cardHtml).join('');
+                document.getElementById('ultimosVehiculos').innerHTML = sorted.slice(0, 5).map(function(v, i) { return cardHtml(v, i); }).join('');
                 aplicarFiltros();
             }).fail(function() {
                 reservasActivas = [];

@@ -52,7 +52,7 @@ function cargarReservas(historial) {
         html += '<thead><tr><th>Vehículo</th><th>Fechas</th><th>Monto</th><th>Estado</th>';
         if (!historial) html += '<th>Acción</th>';
         html += '</tr></thead><tbody>';
-        data.forEach(r => {
+        data.forEach((r, idx) => {
             const marca = escapeHtml(r.marca);
             const modelo = escapeHtml(r.modelo);
             const fechaInicio = escapeHtml(r.fecha_inicio);
@@ -62,9 +62,6 @@ function cargarReservas(historial) {
             const pagado = parseInt(r.pagado) === 1;
 
             let montoHtml = '$' + r.monto_total;
-            if (r.recargo_aplicado > 0) {
-                montoHtml += '<br><span style="color:var(--rw-danger); font-size:0.8rem;">+25% recargo ($' + r.recargo_aplicado + ')<br><strong>Total: $' + r.monto_total_con_recargo + '</strong></span>';
-            }
 
             let badge = '<span class="badge">' + estado + '</span>';
             if (estado === 'pendiente') badge = '<span class="badge badge-warning">Pendiente de confirmación</span>';
@@ -72,27 +69,27 @@ function cargarReservas(historial) {
             else if (estado === 'confirmada') badge = '<span class="badge badge-warning">Pendiente de pago</span>';
             else if (estado === 'cancelada') badge = '<span class="badge badge-danger">Cancelada</span>';
 
-            html += `<tr>
+            html += `<tr style="--i:${Math.min(idx, 14)};">
                          <td><strong>${marca} ${modelo}</strong></td>
                          <td>${fechaInicio} a ${fechaFin}</td>
                          <td>${montoHtml}</td>
                          <td>${badge}</td>`;
 
             if (!historial) {
-                html += '<td>';
+                html += '<td><div class="rw-acciones">';
                 if (estado === 'pendiente') {
-                    html += `<button onclick="pagar(${r.id})" class="btn-small btn-warning">Pagar</button> `;
-                    html += `<button onclick="cancelarReserva(${r.id})" class="btn-small btn-warning" style="background:var(--rw-red);border-color:var(--rw-red);">Cancelar</button>`;
+                    html += `<button onclick="pagar(${r.id},'${estado}')" title="Pagar reserva" style="background:#3b82f6;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></button> `;
+                    html += `<button onclick="cancelarReserva(${r.id})" title="Cancelar reserva" style="background:#ef4444;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>`;
                 } else if (estado === 'confirmada') {
                     if (pagado) {
-                        html += `<button onclick="verRecibo(${r.id})" class="btn-small btn-primary">Ver recibo</button>`;
+                        html += `<button onclick="verRecibo(${r.id})" title="Ver recibo" style="background:#10b981;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M14 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg></button>`;
                     } else {
-                        html += `<button onclick="pagar(${r.id})" class="btn-small btn-warning">Pagar</button>`;
+                        html += `<button onclick="pagar(${r.id},'${estado}')" title="Pagar reserva" style="background:#3b82f6;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></button>`;
                     }
                 } else if (estado === 'cancelada') {
-                    html += `<button onclick="eliminarReserva(${r.id})" class="btn-small" style="background:var(--rw-gray-500);border-color:var(--rw-gray-500);">Eliminar</button>`;
+                    html += `<button onclick="eliminarReserva(${r.id})" title="Eliminar reserva" style="background:#6b7280;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>`;
                 }
-                html += '</td>';
+                html += '</div></td>';
             }
             html += `</tr>`;
         });
@@ -103,8 +100,18 @@ function cargarReservas(historial) {
     });
 }
 
-function pagar(reserva_id) {
-    window.location.href = '?view=pago&reserva_id=' + reserva_id;
+function pagar(reserva_id, estado) {
+    if (estado === 'pendiente') {
+        showModal({
+            type: 'error',
+            title: 'Reserva no confirmada',
+            message: 'La reserva debe estar confirmada para poder pagarla.'
+        });
+        return;
+    }
+    if (estado === 'confirmada') {
+        window.location.href = '?view=pago&reserva_id=' + reserva_id;
+    }
 }
 
 function cancelarReserva(reserva_id) {

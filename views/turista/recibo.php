@@ -1,7 +1,8 @@
 <?php
+require_once 'includes/uikit.php';
 $reserva_id = intval($_GET['reserva_id'] ?? 0);
 if ($reserva_id <= 0) {
-    echo '<div class="error">ID de reserva no válido.</div>';
+    avisoForeground('error', 'Recibo no disponible', 'ID de reserva no válido.', 'Volver a mis reservas', '?view=mis_reservas');
     exit;
 }
 
@@ -15,7 +16,7 @@ $stmt->execute([$reserva_id, $_SESSION['user_id']]);
 $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$reserva) {
-    echo '<div class="error">Recibo no disponible.</div>';
+    avisoForeground('error', 'Recibo no disponible', 'La reserva no existe, no te pertenece o aún no fue pagada.', 'Volver a mis reservas', '?view=mis_reservas');
     exit;
 }
 ?>
@@ -45,10 +46,6 @@ if (!$reserva) {
         <div class="fila"><span class="label">Vehículo</span><span class="value"><?php echo htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']); ?></span></div>
         <div class="fila"><span class="label">Fechas</span><span class="value"><?php echo htmlspecialchars($reserva['fecha_inicio'] . ' a ' . $reserva['fecha_fin']); ?></span></div>
         <div class="fila"><span class="label">Monto total</span><span class="value">$<?php echo number_format($reserva['monto_total'], 2); ?></span></div>
-        <?php if ($reserva['recargo_aplicado'] > 0): ?>
-        <div class="fila"><span class="label">Recargo (25%)</span><span class="value">$<?php echo number_format($reserva['recargo_aplicado'], 2); ?></span></div>
-        <div class="fila"><span class="label">Total pagado</span><span class="value">$<?php echo number_format($reserva['monto_total_con_recargo'], 2); ?></span></div>
-        <?php endif; ?>
     </div>
     <div class="recibo-total">Pagado</div>
     <div style="text-align: center;">

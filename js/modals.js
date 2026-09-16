@@ -1,6 +1,6 @@
 /* ================================================================
    RENTWHEELS — Sistema compartido de notificaciones y modales
-   showAlert   → toast en esquina inferior derecha
+   showAlert   → toast en esquina inferior izquierda
    showConfirm → modal centrado de confirmación (reemplaza confirm())
    showModal   → modal genérico
    handleAjaxError → muestra error del backend como toast
@@ -43,6 +43,7 @@
                     bar.style.animation = 'none';
                     void bar.offsetWidth;
                     bar.style.animation = '';
+                    bar.style.animationDuration = total + 'ms';
                 }
                 entry.timer = setTimeout(function () { entry.dismiss(); }, total);
                 return;
@@ -192,4 +193,117 @@
     window.showModal = showModal;
     window.handleAjaxError = handleAjaxError;
     window.showToast = showToast;
+})(window, document);
+
+/* ================================================================
+   RONDA 10 — rwAnim: animaciones de contenido
+   - Reveal en cascada ([data-rw-reveal]) al cargar / hacer scroll
+   - Entrada del panel (.dashboard-content .content-card) vía CSS
+   - Contador animado de .stat-number
+   Requiere: html.rw-js (agregado en el <head> de cada página).
+   ================================================================ */
+(function (window, document) {
+    'use strict';
+
+    var REDUCED = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
+
+    var GRUPOS_REVEAL = [
+        '.about-card',
+        '.features-grid > .feature-item',
+        '.stat-card',
+        '.admin-stats-grid > .admin-stat-card',
+        '.chart-panel',
+        '.chart-row > *',
+        '.admin-section-title',
+        '.admin-table',
+        '.auth-card',
+        '.faq-hero',
+        '.faq-section.active > .faq-item'
+    ];
+
+    function setIndex(nodes) {
+        Array.prototype.forEach.call(nodes, function (el, i) {
+            el.style.setProperty('--i', Math.min(i, 7));
+        });
+    }
+
+    function marcarReveal() {
+        GRUPOS_REVEAL.forEach(function (sel) {
+            var nodes = document.querySelectorAll(sel);
+            setIndex(nodes);
+            Array.prototype.forEach.call(nodes, function (el) {
+                if (!el.hasAttribute('data-rw-reveal')) {
+                    el.setAttribute('data-rw-reveal', '');
+                }
+            });
+        });
+        setIndex(document.querySelectorAll('.admin-table tbody tr'));
+    }
+
+    function contarNumero(el) {
+        var texto = el.textContent.trim();
+        var esDinero = texto.charAt(0) === '$';
+        var bruto = texto.replace(/[^0-9.-]/g, '');
+        var fin = parseFloat(bruto);
+        if (isNaN(fin)) return;
+        var decimales = texto.indexOf('.') !== -1 ? (texto.split('.')[1].match(/\d/g) || []).length : 0;
+        var dur = 800;
+
+        if (REDUCED) return;
+
+        var t0 = null;
+        function paso(ts) {
+            if (t0 === null) t0 = ts;
+            var p = Math.min((ts - t0) / dur, 1);
+            var eased = 1 - Math.pow(1 - p, 3);
+            var actual = eased * fin;
+            var txt = Number(actual.toFixed(decimales)).toLocaleString('en-US', {
+                minimumFractionDigits: decimales,
+                maximumFractionDigits: decimales
+            });
+            el.textContent = (esDinero ? '$' : '') + txt;
+            if (p < 1) requestAnimationFrame(paso);
+        }
+        requestAnimationFrame(paso);
+    }
+
+    function revelar(el) {
+        if (el.classList.contains('rw-in')) return;
+        el.classList.add('rw-in');
+        var num = el.querySelector('.stat-number');
+        if (num) contarNumero(num);
+    }
+
+    function iniciar() {
+        marcarReveal();
+        var items = document.querySelectorAll('[data-rw-reveal]');
+
+        if (REDUCED || !('IntersectionObserver' in window)) {
+            Array.prototype.forEach.call(items, revelar);
+            return;
+        }
+
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    revelar(entry.target);
+                    io.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -25px 0px' });
+
+        Array.prototype.forEach.call(items, function (el) {
+            io.observe(el);
+        });
+
+        window.setTimeout(function () {
+            Array.prototype.forEach.call(items, revelar);
+        }, 2000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', iniciar);
+    } else {
+        iniciar();
+    }
 })(window, document);

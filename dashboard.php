@@ -14,6 +14,7 @@ $user_verificado = (int) ($stmt->fetchColumn() ?? 0);
 <html lang="es">
 
 <head>
+    <script>document.documentElement.classList.add('rw-js');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>RentWheels - Panel de control</title>
@@ -29,10 +30,10 @@ $user_verificado = (int) ($stmt->fetchColumn() ?? 0);
 <body>
     <div class="dashboard-container">
         <header class="dashboard-header">
-            <div class="logo-area">
+            <a href="index.php" class="logo-area" title="Volver al inicio">
                 <span class="logo-icon"><img src="img/rw-logo.png" alt="RentWheels"></span>
                 <h1>RentWheels</h1>
-            </div>
+            </a>
             <div class="user-area">
                 <div class="user-menu" id="userMenu">
                     <button type="button" class="user-menu-btn" id="userMenuBtn">

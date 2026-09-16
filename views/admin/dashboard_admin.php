@@ -163,7 +163,7 @@ $chartDataJson = json_encode([
     </div>
 
     <!-- Gráfica de reservas y usuarios por rol -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;">
+    <div class="chart-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;">
         <div style="background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid #f0f0f0;">
             <h4 style="margin-bottom:1rem;"> Reservas por estado</h4>
             <canvas id="reservasChart" width="300" height="200"></canvas>

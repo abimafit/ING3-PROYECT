@@ -1,10 +1,17 @@
 <?php
 require_once 'includes/auth.php';
+$user_verificado = 0;
+if (estaLogueado()) {
+    $stmtV = $pdo->prepare("SELECT verificado FROM usuarios WHERE id = ?");
+    $stmtV->execute([$_SESSION['user_id']]);
+    $user_verificado = (int) ($stmtV->fetchColumn() ?? 0);
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
+    <script>document.documentElement.classList.add('rw-js');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Centro de Ayuda - RentWheels</title>
@@ -21,7 +28,7 @@ require_once 'includes/auth.php';
     <!-- HEADER -->
     <header class="main-header">
         <div class="header-container">
-            <a href="index.php" class="logo">
+            <a href="index.php" class="logo" title="Ir al inicio">
                 <span class="logo-icon"><img src="img/rw-logo.png" alt="RentWheels"></span>
                 <span class="logo-text">RentWheels</span>
             </a>
@@ -31,7 +38,27 @@ require_once 'includes/auth.php';
             </nav>
             <div class="header-actions">
                 <?php if (estaLogueado()): ?>
-                    <a href="dashboard.php" class="btn-primary">Panel</a>
+                    <div class="user-menu user-menu--light" id="userMenu">
+                        <button type="button" class="user-menu-btn" id="userMenuBtn">
+                            <span class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($_SESSION['nombre'], 0, 1))); ?></span>
+                            <span class="user-meta">
+                                <span class="user-name"><?php echo htmlspecialchars($_SESSION['nombre']); ?><?php if ($user_verificado): ?><svg class="rw-verified-badge" viewBox="0 0 24 24" width="15" height="15" fill="#1da1f2" aria-label="Cuenta verificada"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81C14.67 2.63 13.43 1.75 12 1.75s-2.67.88-3.34 2.19c-1.39-.46-2.9-.2-3.91.81s-1.27 2.52-.81 3.91C2.63 9.33 1.75 10.57 1.75 12s.88 2.67 2.19 3.34c-.46 1.39-.2 2.9.81 3.91s2.52 1.27 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.67-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34Zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.35-6.2 6.78Z"/></svg><?php endif; ?></span>
+                                <span class="user-role-badge"><?php echo ucfirst($_SESSION['rol']); ?></span>
+                            </span>
+                            <svg class="user-menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="user-menu-dropdown" id="userMenuDropdown">
+                            <a href="dashboard.php" class="user-menu-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                Mi panel
+                            </a>
+                            <div class="user-menu-divider"></div>
+                            <button type="button" class="user-menu-item logout" onclick="confirmarLogout()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                                Cerrar sesión
+                            </button>
+                        </div>
+                    </div>
                 <?php else: ?>
                     <a href="login.php" class="btn-outline">Iniciar sesión</a>
                     <a href="register.php" class="btn-primary">Registrarse</a>
@@ -650,11 +677,53 @@ require_once 'includes/auth.php';
                 var text = item.textContent.toLowerCase();
                 var match = text.includes(filter);
                 item.style.display = match ? 'block' : 'none';
-                if (match) visible++;
+                if (match) {
+                    item.classList.remove('rw-faq-in');
+                    void item.offsetWidth;
+                    item.classList.add('rw-faq-in');
+                    visible++;
+                } else {
+                    item.classList.remove('rw-faq-in');
+                }
             });
 
             var emptyEl = activeSection.querySelector('.faq-empty');
             if (emptyEl) emptyEl.style.display = visible === 0 ? 'block' : 'none';
+        }
+    </script>
+
+    <!-- Menú de sesión (perfil) -->
+    <script>
+        (function() {
+            var btn = document.getElementById('userMenuBtn');
+            var dd = document.getElementById('userMenuDropdown');
+            var menu = document.getElementById('userMenu');
+            if (!btn || !dd || !menu) return;
+
+            function closeMenu() {
+                btn.classList.remove('open');
+                dd.classList.remove('open');
+            }
+
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                btn.classList.toggle('open');
+                dd.classList.toggle('open');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!menu.contains(e.target)) closeMenu();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeMenu();
+            });
+        })();
+
+        function confirmarLogout() {
+            showConfirm('¿Estás seguro de que deseas cerrar sesión?', function() {
+                window.location.href = 'logout.php';
+            });
         }
     </script>
 

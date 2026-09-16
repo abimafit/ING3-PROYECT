@@ -1,7 +1,8 @@
 <?php
+require_once 'includes/uikit.php';
 $reserva_id = intval($_GET['reserva_id'] ?? 0);
 if ($reserva_id <= 0) {
-    echo '<div class="error">ID de reserva no válido.</div>';
+    avisoForeground('error', 'Reserva no encontrada', 'ID de reserva no válido.', 'Volver a mis reservas', '?view=mis_reservas');
     exit;
 }
 
@@ -14,17 +15,17 @@ $stmt->execute([$reserva_id, $_SESSION['user_id']]);
 $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$reserva) {
-    echo '<div class="error">Reserva no encontrada o no te pertenece.</div>';
+    avisoForeground('error', 'Reserva no encontrada', 'La reserva no existe o no te pertenece.', 'Volver a mis reservas', '?view=mis_reservas');
     exit;
 }
 
 if ($reserva['estado'] !== 'confirmada') {
-    echo '<div class="error">La reserva debe estar confirmada para pagar.</div>';
+    avisoForeground('error', 'Reserva no confirmada', 'La reserva debe estar confirmada para poder pagarla.', 'Volver a mis reservas', '?view=mis_reservas');
     exit;
 }
 
 if ($reserva['pagado'] == 1) {
-    echo '<div class="success">Esta reserva ya fue pagada. <a href="?view=mis_reservas">Volver a mis reservas</a></div>';
+    avisoForeground('success', 'Pago ya realizado', 'Esta reserva ya fue pagada.', 'Ver mis reservas', '?view=mis_reservas');
     exit;
 }
 
@@ -34,7 +35,7 @@ $stmt->execute([$reserva['compania_id']]);
 $compania = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$compania) {
-    echo '<div class="error">No se encontraron datos de la compañía.</div>';
+    avisoForeground('error', 'Compañía no encontrada', 'No se encontraron los datos de pago de la compañía.', 'Volver a mis reservas', '?view=mis_reservas');
     exit;
 }
 ?>

@@ -39,26 +39,13 @@ if ($method === 'GET') {
             $stmt->execute([$_SESSION['user_id']]);
 
             $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $hoy = new DateTime('today');
-            foreach ($reservas as &$r) {
-                $fecha_fin = new DateTime($r['fecha_fin']);
-                $recargo = 0;
-                $recargo_porcentaje = 0;
-                if ($hoy > $fecha_fin && $r['estado'] === 'confirmada') {
-                    $recargo_porcentaje = 25;
-                    $recargo = round($r['monto_total'] * 0.25, 2);
-                }
-                $r['recargo_aplicado'] = $recargo;
-                $r['recargo_porcentaje'] = $recargo_porcentaje;
-                $r['monto_total_con_recargo'] = round($r['monto_total'] + $recargo, 2);
-            }
             echo json_encode($reservas);
         } elseif (isset($_GET['recibidas'])) {
             if ($_SESSION['rol'] !== 'compania') {
                 echo json_encode(['error' => 'Solo compañías pueden ver reservas recibidas']);
                 exit;
             }
-            $stmt = $pdo->prepare("SELECT r.*, v.marca, v.modelo, u.nombre as turista_nombre 
+            $stmt = $pdo->prepare("SELECT r.*, v.marca, v.modelo, v.imagen_url, u.nombre as turista_nombre 
                                    FROM reservas r 
                                    JOIN vehiculos v ON r.vehiculo_id = v.id 
                                    JOIN usuarios u ON r.turista_id = u.id 
