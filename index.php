@@ -17,7 +17,7 @@ if (!$autos) $autos = [];
     <script>document.documentElement.classList.add('rw-js');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RentWheels - Alquila tu auto</title>
+    <title>RentWheels - Alquila Tu auto</title>
     <link rel="icon" type="image/png" href="img/rw-logo.png">
     <link rel="stylesheet" href="css/style-global.css">
     <link rel="stylesheet" href="css/style-public.css">
