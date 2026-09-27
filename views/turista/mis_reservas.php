@@ -1,5 +1,5 @@
 <div class="view-header">
-    <h3>Mis reservas</h3>
+    <h3>Mis Reservas</h3>
 </div>
 
 <div class="tabs-container" style="display:flex; gap:0.25rem; border-bottom:2px solid #e5e7eb; margin-bottom:1.5rem;">
